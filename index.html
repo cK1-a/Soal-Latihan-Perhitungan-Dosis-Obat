@@ -1,0 +1,2836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Latihan Soal Menghitung Dosis Obat & Tetesan Infus (Dewasa & Anak)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            clinical: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              200: '#bae0fd',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    /* Custom scrollbar ringan untuk navigasi soal */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- TOP NAVBAR / HEADER -->
+  <header class="bg-gradient-to-r from-clinical-900 via-clinical-800 to-clinical-700 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20 shrink-0">
+          <!-- Ikon Medis / Suntikan SVG -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-sky-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 4.5l-15 15m0 0h4.5m-4.5 0v-4.5m11.25-8.25l2.25 2.25m-4.5 0l2.25 2.25m-9 4.5l2.25 2.25M15 3l6 6" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-xl font-bold tracking-tight leading-tight">
+            Latihan Hitung Dosis Obat & Tetesan Infus
+          </h1>
+          <div class="flex flex-wrap items-center gap-2 mt-0.5">
+            <span id="daily-date-badge" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-white/15 text-sky-100 px-2.5 py-0.5 rounded-full border border-white/20">
+              Paket Soal Harian: Memuat...
+            </span>
+            <span class="text-xs text-sky-200 hidden md:inline">
+              • 50 Kasus Klinis (Dewasa, Anak & Infus)
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Scoreboard & Tombol Aksi Header -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 ml-auto sm:ml-0">
+        <!-- Live Score Pill -->
+        <div class="bg-white/10 border border-white/20 rounded-xl px-3 py-1.5 text-xs font-medium flex items-center gap-2.5">
+          <span>Terjawab: <strong id="progress-count" class="text-white">0</strong>/50</span>
+          <span class="text-white/30">|</span>
+          <span class="text-emerald-300">Benar: <strong id="live-correct-count">0</strong></span>
+          <span class="text-rose-300">Salah: <strong id="live-wrong-count">0</strong></span>
+          <span class="text-white/30">|</span>
+          <span class="text-amber-300">Skor: <strong id="live-score-count">0</strong></span>
+        </div>
+
+        <!-- Tombol Riwayat Pengerjaan -->
+        <button
+          type="button"
+          onclick="openHistoryModal()"
+          class="bg-white/15 hover:bg-white/25 text-white border border-white/25 font-semibold text-xs sm:text-sm px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-sky-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Riwayat (<span id="history-badge-count">0</span>)</span>
+        </button>
+
+        <!-- Tombol Latihan Paket Acak Baru -->
+        <button
+          type="button"
+          onclick="requestNewRandomPack()"
+          class="bg-sky-500/30 hover:bg-sky-500/45 text-white border border-sky-300/30 font-semibold text-xs sm:text-sm px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+          title="Buat variasi 50 soal acak baru di luar paket harian"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-sky-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span class="hidden sm:inline">Paket Acak Baru</span>
+        </button>
+
+        <!-- Tombol Rumus -->
+        <button
+          id="toggle-formula-btn"
+          type="button"
+          onclick="toggleFormulaPanel()"
+          class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          <span id="formula-btn-text">Sembunyikan Rumus</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- PANEL RINGKASAN RUMUS (BISA BUKA/TUTUP) -->
+  <section id="formula-panel" class="bg-sky-50/90 border-b border-sky-200 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-clinical-800 flex items-center gap-2">
+          <span class="px-2 py-0.5 bg-clinical-700 text-white rounded-md text-xs">Referensi Cepat</span>
+          Rumus Dosis Obat (Ampul & Vial) serta Tetesan Infus (TPM)
+        </h2>
+        <span class="text-xs text-slate-500 hidden lg:inline">Samakan satuan dosis (mg/mcg) sebelum membagi</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <!-- Kartu Rumus Ampul -->
+        <div class="bg-white rounded-2xl p-4 border border-sky-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-bold text-clinical-700">1. Obat Sediaan Ampul</span>
+              <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-sky-100 text-clinical-800">Cair</span>
+            </div>
+            <div class="bg-slate-800 text-white rounded-xl p-3 text-center font-medium text-xs sm:text-sm my-2">
+              <div class="inline-flex items-center justify-center gap-2.5 flex-wrap">
+                <div class="flex flex-col items-center">
+                  <span class="border-b border-slate-400 pb-1 px-2 text-sky-300">Dosis Diminta (mg)</span>
+                  <span class="pt-1 px-2 text-amber-300">Sediaan Obat (mg)</span>
+                </div>
+                <span class="text-base font-bold">×</span>
+                <span class="text-emerald-300 font-semibold">Jumlah Volume (ml)</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-600 mt-1">
+            <strong>Contoh:</strong> Diminta 4 mg, sediaan 4 mg/2 ml &rarr; (4 / 4) &times; 2 = <strong>2 ml</strong>.
+          </p>
+        </div>
+
+        <!-- Kartu Rumus Vial -->
+        <div class="bg-white rounded-2xl p-4 border border-emerald-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-bold text-emerald-700">2. Obat Sediaan Vial</span>
+              <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Serbuk + Pelarut</span>
+            </div>
+            <div class="bg-slate-800 text-white rounded-xl p-3 text-center font-medium text-xs sm:text-sm my-2">
+              <div class="inline-flex items-center justify-center gap-2.5 flex-wrap">
+                <div class="flex flex-col items-center">
+                  <span class="border-b border-slate-400 pb-1 px-2 text-sky-300">Dosis Diminta (mg)</span>
+                  <span class="pt-1 px-2 text-amber-300">Sediaan Obat (mg)</span>
+                </div>
+                <span class="text-base font-bold">×</span>
+                <span class="text-emerald-300 font-semibold">Pengencer (ml)</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-600 mt-1">
+            <strong>Contoh:</strong> Diminta 250 mg, vial 500 mg dilarutkan 5 ml &rarr; (250 / 500) &times; 5 = <strong>2,5 ml</strong>.
+          </p>
+        </div>
+
+        <!-- Kartu Rumus Dosis Anak -->
+        <div class="bg-white rounded-2xl p-4 border border-teal-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-bold text-teal-700">3. Dosis Anak (mg/kgBB)</span>
+              <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800">Hitung dosis total</span>
+            </div>
+            <div class="bg-slate-800 text-white rounded-xl p-3 text-center font-medium text-xs sm:text-sm my-2">
+              <div class="flex flex-col items-center">
+                <span class="border-b border-slate-400 pb-1 px-2 text-sky-300">Dosis (mg/kgBB) × Berat Badan (kg)</span>
+                <span class="pt-1 px-2 text-amber-300">= Dosis Diminta (mg)</span>
+              </div>
+              <div class="text-xs text-slate-300 mt-2">Lalu hitung volume: (Dosis Diminta / Sediaan Obat) × Volume Sediaan</div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-600 mt-1">
+            <strong>Contoh:</strong> 20 mg/kgBB × 15 kg = 300 mg; sediaan 500 mg/5 ml → (300 / 500) × 5 = <strong>3 ml</strong>.
+          </p>
+        </div>
+
+        <!-- Kartu Rumus Tetesan Infus -->
+        <div class="bg-white rounded-2xl p-4 border border-indigo-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-bold text-indigo-700">3. Tetesan Infus (TPM)</span>
+              <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800">Makro & Mikro</span>
+            </div>
+            <div class="bg-slate-800 text-white rounded-xl p-3 text-center font-medium text-xs sm:text-sm my-2">
+              <div class="inline-flex items-center justify-center gap-2 flex-wrap">
+                <div class="flex flex-col items-center">
+                  <span class="border-b border-slate-400 pb-1 px-2 text-sky-300">Jumlah Cairan (ml) × Faktor Tetes</span>
+                  <span class="pt-1 px-2 text-amber-300">Waktu (jam) × 60 menit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-600 mt-1">
+            <strong>Faktor Tetes:</strong> Makro = <strong>20</strong> atau <strong>15</strong> tetes/ml | Mikro (Anak) = <strong>60</strong> tetes/ml.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTEN UTAMA -->
+  <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex-1">
+
+    <!-- KARTU HASIL SKOR (MUNCUL SETELAH DISIMPAN/DIKUMPULKAN) -->
+    <section id="result-banner" class="hidden mb-6">
+      <div class="bg-white rounded-2xl border-2 border-clinical-500 shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-clinical-800 to-clinical-600 px-6 py-4 text-white flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span class="text-xs uppercase tracking-widest font-semibold text-sky-200" id="result-pack-subtitle">Ringkasan Hasil Evaluasi</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold mt-0.5" id="result-status-title">Evaluasi Tersimpan ke Riwayat</h2>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onclick="openHistoryModal()"
+              class="bg-sky-900/50 hover:bg-sky-900/70 text-white border border-white/25 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition cursor-pointer"
+            >
+              Buka Riwayat Pengerjaan
+            </button>
+            <button
+              type="button"
+              onclick="openResetModal()"
+              class="bg-white text-clinical-800 hover:bg-sky-50 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow transition cursor-pointer flex items-center gap-2"
+            >
+              Ulangi Paket Ini
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6 grid grid-cols-2 sm:grid-cols-5 gap-4 items-center">
+          <!-- Skor Utama -->
+          <div class="col-span-2 sm:col-span-1 bg-clinical-50 border border-clinical-200 rounded-2xl p-4 text-center">
+            <div class="text-xs font-semibold text-clinical-700 uppercase">Skor Akhir</div>
+            <div class="text-4xl font-extrabold text-clinical-800 my-1" id="score-value">0</div>
+            <div class="text-xs text-slate-500">dari 100 poin</div>
+          </div>
+
+          <!-- Benar -->
+          <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
+            <div class="text-xs font-semibold text-emerald-700 uppercase">Benar</div>
+            <div class="text-2xl sm:text-3xl font-bold text-emerald-700 my-1" id="correct-count">0</div>
+            <div class="text-xs text-emerald-600">Soal tepat</div>
+          </div>
+
+          <!-- Salah -->
+          <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-center">
+            <div class="text-xs font-semibold text-rose-700 uppercase">Salah</div>
+            <div class="text-2xl sm:text-3xl font-bold text-rose-700 my-1" id="wrong-count">0</div>
+            <div class="text-xs text-rose-600">Perlu evaluasi</div>
+          </div>
+
+          <!-- Kosong -->
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center">
+            <div class="text-xs font-semibold text-amber-700 uppercase">Kosong</div>
+            <div class="text-2xl sm:text-3xl font-bold text-amber-700 my-1" id="unanswered-count">0</div>
+            <div class="text-xs text-amber-600">Belum diisi</div>
+          </div>
+
+          <!-- Rincian Kategori -->
+          <div class="col-span-2 sm:col-span-1 bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs space-y-1">
+            <div class="font-bold text-slate-700 border-b border-slate-200 pb-1">Rincian Bagian:</div>
+            <div class="flex justify-between">
+              <span class="text-slate-600">Dewasa (1–18):</span>
+              <span class="font-bold text-slate-800" id="adult-score-detail">0/18</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-600">Anak (19–35):</span>
+              <span class="font-bold text-slate-800" id="peds-score-detail">0/17</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-600">Infus (36–50):</span>
+              <span class="font-bold text-slate-800" id="infusion-score-detail">0/15</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTER KATEGORI & MODE TAMPILAN -->
+    <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200 shadow-sm mb-6 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Filter Kategori -->
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mr-1">Kategori:</span>
+          <button
+            type="button"
+            onclick="setCategoryFilter('all')"
+            id="cat-all"
+            class="cat-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-clinical-700 text-white shadow-sm"
+          >
+            Semua (1–50)
+          </button>
+          <button
+            type="button"
+            onclick="setCategoryFilter('adult')"
+            id="cat-adult"
+            class="cat-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+          >
+            Dosis Dewasa (1–18)
+          </button>
+          <button
+            type="button"
+            onclick="setCategoryFilter('pediatric')"
+            id="cat-pediatric"
+            class="cat-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+          >
+            Dosis Anak (19–35)
+          </button>
+          <button
+            type="button"
+            onclick="setCategoryFilter('infusion')"
+            id="cat-infusion"
+            class="cat-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+          >
+            Tetesan Infus (36–50)
+          </button>
+        </div>
+
+        <!-- Mode Tampilan -->
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mr-1">Tampilan:</span>
+          <button
+            type="button"
+            onclick="setViewMode('list')"
+            id="view-list"
+            class="view-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer bg-slate-800 text-white"
+          >
+            Semua Sekaligus
+          </button>
+          <button
+            type="button"
+            onclick="setViewMode('paged')"
+            id="view-paged"
+            class="view-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+          >
+            Per 10 Soal
+          </button>
+          <button
+            type="button"
+            onclick="setViewMode('single')"
+            id="view-single"
+            class="view-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200"
+          >
+            Satu per Satu
+          </button>
+        </div>
+      </div>
+
+      <!-- Bar Info Paket & Tombol Simpan Cepat -->
+      <div class="pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2 text-slate-600">
+          <span id="pack-mode-indicator" class="inline-flex items-center gap-1.5 font-semibold text-clinical-800 bg-clinical-50 border border-clinical-200 px-2.5 py-1 rounded-lg">
+            Mode: Paket Harian Otomatis (Berganti Setiap Hari)
+          </span>
+          <button
+            id="back-to-daily-btn"
+            type="button"
+            onclick="switchToDailyPack()"
+            class="hidden text-clinical-700 hover:text-clinical-900 underline font-semibold cursor-pointer"
+          >
+            Kembali ke Paket Harian Hari Ini
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 ml-auto">
+          <button
+            type="button"
+            onclick="openAddQuestionModal()"
+            class="px-3 py-1.5 rounded-xl font-semibold text-clinical-800 bg-clinical-50 hover:bg-clinical-100 border border-clinical-200 transition cursor-pointer"
+          >
+            + Tambah Soal
+          </button>
+          <button
+            type="button"
+            onclick="openResetModal()"
+            class="px-3 py-1.5 rounded-xl font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+          >
+            Reset Jawaban
+          </button>
+          <button
+            id="top-submit-btn"
+            type="button"
+            onclick="handleSubmitRequest()"
+            class="px-4 py-1.5 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition cursor-pointer flex items-center gap-1.5"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Selesai & Simpan ke Riwayat
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYOUT GRID: KOLOM SOAL (KIRI) + NAVIGASI NOMOR (KANAN) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- DAFTAR SOAL -->
+      <div class="lg:col-span-8 space-y-5">
+        <!-- Bar Navigasi Halaman / Satu per Satu (Atas) -->
+        <div id="pagination-top-bar" class="hidden bg-clinical-50 border border-clinical-200 rounded-2xl px-4 py-3 flex items-center justify-between gap-2">
+          <span class="text-xs sm:text-sm font-semibold text-clinical-900" id="page-indicator-text">Halaman 1 dari 5</span>
+          <div class="flex gap-2">
+            <button type="button" onclick="changeStep(-1)" id="prev-page-top" class="px-3 py-1.5 rounded-lg bg-white border border-clinical-200 text-xs font-semibold text-clinical-800 hover:bg-clinical-100 disabled:opacity-40 cursor-pointer">
+              &larr; Sebelumnya
+            </button>
+            <button type="button" onclick="changeStep(1)" id="next-page-top" class="px-3 py-1.5 rounded-lg bg-clinical-700 text-xs font-semibold text-white hover:bg-clinical-800 disabled:opacity-40 cursor-pointer">
+              Berikutnya &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Container Kartu Soal -->
+        <div id="questions-container" class="space-y-5">
+          <!-- Soal dirender lewat JavaScript -->
+        </div>
+
+        <!-- Bar Navigasi Halaman / Satu per Satu (Bawah) -->
+        <div id="pagination-bottom-bar" class="hidden bg-white border border-slate-200 rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-sm">
+          <button type="button" onclick="changeStep(-1)" id="prev-page-bottom" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs sm:text-sm font-semibold text-slate-700 disabled:opacity-40 cursor-pointer">
+            &larr; Sebelumnya
+          </button>
+          <span class="text-xs sm:text-sm font-bold text-slate-600" id="page-indicator-bottom">1 / 5</span>
+          <button type="button" onclick="changeStep(1)" id="next-page-bottom" class="px-4 py-2 rounded-xl bg-clinical-700 hover:bg-clinical-800 text-xs sm:text-sm font-semibold text-white disabled:opacity-40 cursor-pointer">
+            Berikutnya &rarr;
+          </button>
+        </div>
+
+        <!-- TOMBOL SELESAI & SIMPAN DI BAGIAN BAWAH -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base">Simpan Hasil Latihan ke Riwayat</h3>
+            <p class="text-xs sm:text-sm text-slate-500">
+              Setiap jawaban langsung menampilkan pembahasan, rumus hitung, dan fungsi obat. Klik tombol di samping untuk mencatat skor akhir Anda ke arsip riwayat.
+            </p>
+          </div>
+          <div class="flex items-center gap-3 w-full sm:w-auto justify-end shrink-0">
+            <button
+              type="button"
+              onclick="openResetModal()"
+              class="px-4 py-3 rounded-xl text-sm font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+            >
+              Reset
+            </button>
+            <button
+              id="bottom-submit-btn"
+              type="button"
+              onclick="handleSubmitRequest()"
+              class="px-5 py-3 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition cursor-pointer flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Selesai & Simpan ke Riwayat
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR NAVIGASI NOMOR SOAL (STICKY DI DESKTOP) -->
+      <aside class="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm sm:text-base">Navigasi Nomor Soal</h3>
+              <p class="text-xs text-slate-500">Klik nomor untuk melompat ke soal</p>
+            </div>
+            <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-clinical-50 text-clinical-700" id="nav-progress-badge">
+              0/50
+            </span>
+          </div>
+
+          <!-- Legenda Warna Real-time -->
+          <div class="flex flex-wrap gap-3 text-[11px] text-slate-600 mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+            <div class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded bg-white border border-slate-300 inline-block"></span>
+              <span>Belum dijawab</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span>
+              <span>Benar</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded bg-rose-500 inline-block"></span>
+              <span>Salah</span>
+            </div>
+          </div>
+
+          <!-- Bagian 1: Dosis Dewasa (1-18) -->
+          <div class="mb-3">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-clinical-700 mb-1.5">
+              1. Dosis Obat Dewasa (1–18)
+            </div>
+            <div id="nav-grid-adult" class="grid grid-cols-6 sm:grid-cols-9 lg:grid-cols-6 gap-1.5">
+              <!-- Tombol 1-18 -->
+            </div>
+          </div>
+
+          <!-- Bagian 2: Dosis Anak (19-35) -->
+          <div class="mb-3">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-teal-700 mb-1.5">
+              2. Dosis Obat Anak & Bayi (19–35)
+            </div>
+            <div id="nav-grid-pediatric" class="grid grid-cols-6 sm:grid-cols-9 lg:grid-cols-6 gap-1.5">
+              <!-- Tombol 19-35 -->
+            </div>
+          </div>
+
+          <!-- Bagian 3: Tetesan Infus (36-50) -->
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 mb-1.5">
+              3. Tetesan Infus Dewasa & Anak (36–50)
+            </div>
+            <div id="nav-grid-infusion" class="grid grid-cols-6 sm:grid-cols-9 lg:grid-cols-6 gap-1.5">
+              <!-- Tombol 36-50 -->
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4">
+      Aplikasi Kuis Keperawatan • Perhitungan Dosis Obat (Ampul & Vial) dan Tetesan Infus (Makro & Mikro) dengan Rotasi Soal Harian
+    </div>
+  </footer>
+
+  <!-- MODAL RIWAYAT PENGERJAAN SOAL -->
+  <div id="history-modal" class="hidden fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <!-- Header Modal Riwayat -->
+      <div class="bg-gradient-to-r from-clinical-900 to-clinical-700 px-5 py-4 text-white flex items-center justify-between shrink-0">
+        <div>
+          <h3 class="text-lg font-bold flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-sky-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span id="history-modal-title">Riwayat Pengerjaan Latihan</span>
+          </h3>
+          <p class="text-xs text-sky-200 mt-0.5" id="history-modal-subtitle">
+            Arsip sesi latihan dan daftar soal yang sudah pernah Anda kerjakan
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            id="history-back-list-btn"
+            type="button"
+            onclick="renderHistoryListView()"
+            class="hidden px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-xs font-semibold text-white transition cursor-pointer"
+          >
+            &larr; Kembali ke Daftar Riwayat
+          </button>
+          <button
+            type="button"
+            onclick="closeHistoryModal()"
+            class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition cursor-pointer"
+            title="Tutup"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Konten Modal Riwayat -->
+      <div id="history-modal-body" class="p-5 overflow-y-auto flex-1 space-y-4 bg-slate-50">
+        <!-- Dirender melalui JS -->
+      </div>
+
+      <!-- Footer Modal Riwayat -->
+      <div class="bg-white border-t border-slate-200 px-5 py-3 flex items-center justify-between shrink-0">
+        <button
+          id="clear-all-history-btn"
+          type="button"
+          onclick="confirmClearAllHistory()"
+          class="text-xs font-semibold text-rose-600 hover:text-rose-800 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+        >
+          Hapus Semua Riwayat
+        </button>
+        <button
+          type="button"
+          onclick="closeHistoryModal()"
+          class="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-900 text-white transition cursor-pointer"
+        >
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TAMBAH SOAL DOSIS ANAK KUSTOM -->
+  <div id="add-question-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <form id="add-question-form" onsubmit="addCustomQuestion(event)" class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Tambah Soal Dosis Anak</h3>
+          <p class="text-sm text-slate-600 mt-1">Rumus: (dosis × BB / sediaan) × volume.</p>
+        </div>
+        <button type="button" onclick="closeAddQuestionModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600" aria-label="Tutup">✕</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <label class="text-sm font-semibold text-slate-700">Nama obat
+          <input name="drugName" required maxlength="60" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal" placeholder="Contoh: Cefotaxime" />
+        </label>
+        <label class="text-sm font-semibold text-slate-700">Dosis (mg/kgBB)
+          <input name="dosePerKg" type="number" min="0.001" step="any" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal" />
+        </label>
+        <label class="text-sm font-semibold text-slate-700">Berat badan (kg)
+          <input name="weightKg" type="number" min="0.1" step="any" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal" />
+        </label>
+        <label class="text-sm font-semibold text-slate-700">Sediaan obat (mg)
+          <input name="stockMg" type="number" min="0.001" step="any" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal" />
+        </label>
+        <label class="text-sm font-semibold text-slate-700 sm:col-span-2">Volume sediaan (ml)
+          <input name="volumeMl" type="number" min="0.001" step="any" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal" />
+        </label>
+      </div>
+      <div class="flex justify-end gap-2 mt-6">
+        <button type="button" onclick="closeAddQuestionModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200">Batal</button>
+        <button type="submit" class="px-4 py-2 rounded-xl font-bold text-white bg-clinical-700 hover:bg-clinical-800">Tambahkan ke Paket</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODAL KONFIRMASI (PENGGANTI ALERT/CONFIRM) -->
+  <div id="custom-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 transform transition-all">
+      <div class="flex items-start gap-3.5">
+        <div id="modal-icon-container" class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 id="modal-title" class="text-lg font-bold text-slate-900">Konfirmasi</h3>
+          <p id="modal-message" class="text-sm text-slate-600 mt-1 leading-relaxed">
+            Pesan konfirmasi...
+          </p>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-2.5">
+        <button
+          type="button"
+          onclick="closeModal()"
+          class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+        >
+          Batal
+        </button>
+        <button
+          id="modal-confirm-btn"
+          type="button"
+          class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-clinical-700 hover:bg-clinical-800 transition cursor-pointer"
+        >
+          Ya, Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * 1. PRNG DETERMINISTIK (MULBERRY32) & SEED BERBASIS TANGGAL HARI INI
+     * ============================================================================
+     * Memastikan paket 50 soal konsisten sepanjang hari yang sama (YYYY-MM-DD),
+     * dan otomatis berganti setiap pergantian hari kalender.
+     */
+    function stringToSeed(str) {
+      let h = 1779033703 ^ str.length;
+      for (let i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
+      }
+      return function () {
+        h = Math.imul(h ^ (h >>> 16), 2246822507);
+        h = Math.imul(h ^ (h >>> 13), 3266489909);
+        return (h ^= h >>> 16) >>> 0;
+      };
+    }
+
+    function mulberry32(seed) {
+      let a = seed >>> 0;
+      return function () {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function getTodayISOString() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatIndonesianDate(isoDateStr) {
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      const parts = isoDateStr.split('-');
+      if (parts.length !== 3) return isoDateStr;
+      return `${parseInt(parts[2], 10)} ${months[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
+    }
+
+    function formatDecimalID(num) {
+      // Membulatkan presisi float agar bebas 0.30000000000000004
+      const clean = Math.round(num * 1000) / 1000;
+      return clean.toString().replace('.', ',');
+    }
+
+    function formatThousandsID(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[char]);
+    }
+
+    function seededPick(rng, arr) {
+      return arr[Math.floor(rng() * arr.length)];
+    }
+
+    function seededShuffle(rng, arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    /**
+     * ============================================================================
+     * 2. BANK TEMPLATE KASUS KLINIS & GENERATOR SOAL TERVERIFIKASI EKSAK
+     * ============================================================================
+     * Setiap template memiliki parameter tervalidasi sehingga hasil akhir selalu
+     * bilangan bulat atau desimal bersih (0,25 / 0,5 / 0,75 / 1,25 / 1,5 / 2,5 dll.)
+     * tanpa eror pembulatan.
+     */
+
+    // A. TEMPLATE OBAT DEWASA (AMPUL & VIAL) - 18 SOAL (No. 1 - 18)
+    const ADULT_DRUG_TEMPLATES = [
+      {
+        drugName: "Cefotaxime",
+        drugClass: "Antibiotik Sefalosporin Generasi ke-3",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Pneumonia Bakterial Komunitas",
+        complaints: [
+          "demam tinggi 39,1°C sejak 3 hari lalu disertai batuk berdahak purulen dan sesak napas ringan",
+          "demam menggigil, nyeri dada pleuritik saat menarik napas, serta leukositosis (18.400/µL)"
+        ],
+        scenarios: [
+          { stock: 500, vol: 5, orders: [250, 350, 400, 150] },
+          { stock: 1000, vol: 10, orders: [500, 750, 250, 600] }
+        ],
+        functionText: "Menghambat sintesis dinding sel bakteri gram negatif maupun gram positif pada infeksi saluran napas bawah (pneumonia). Perawat wajib memantau riwayat alergi penisilin/sefalosporin dan memeriksa kelarutan serbuk sebelum injeksi IV."
+      },
+      {
+        drugName: "Ondansetron",
+        drugClass: "Antiemetik (Antagonis Reseptor Serotonin 5-HT3)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Sindrom Dispepsia Akut & Muntah Pasca Operasi (PONV)",
+        complaints: [
+          "mual hebat dan muntah menyemprot >5 kali pasca tindakan pembedahan abdomen",
+          "mual menetap disertai rasa terbakar di ulu hati dan ketidakmampuan mempertahankan asupan oral"
+        ],
+        scenarios: [
+          { stock: 4, vol: 2, orders: [2, 4, 6, 8] },
+          { stock: 8, vol: 4, orders: [4, 6, 2, 8] }
+        ],
+        functionText: "Memblokir reseptor serotonin (5-HT3) di saluran cerna dan pusat muntah medula untuk meredakan mual dan muntah akut. Berikan secara injeksi IV perlahan selama 2–5 menit untuk mencegah efek samping pusing atau pemanjangan interval QT."
+      },
+      {
+        drugName: "Ceftriaxone",
+        drugClass: "Antibiotik Sefalosporin Generasi ke-3 Spektrum Luas",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Demam Tifoid (Typhoid Fever) & Infeksi Intra-Abdomen",
+        complaints: [
+          "demam naik bertahap terutama sore hingga malam hari selama 7 hari disertai lidah kotor dan nyeri abdomen",
+          "demam tinggi disertai nyeri tekan kuadran kanan bawah dan hasil uji Widal/Tubex positif"
+        ],
+        scenarios: [
+          { stock: 1000, vol: 10, orders: [750, 500, 800, 1000] },
+          { stock: 1000, vol: 5, orders: [500, 750, 250, 600] }
+        ],
+        functionText: "Antibiotik bakterisidal spektrum luas untuk eradikasi Salmonella typhi dan bakteri gram negatif lainnya. Hindari pencampuran langsung dengan cairan mengandung kalsium (seperti Ringer Laktat) dalam satu jalur IV yang sama."
+      },
+      {
+        drugName: "Ketorolac Tromethamine",
+        drugClass: "Analgesik Non-Steroid (OAINS / NSAID Poten)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Nyeri Akut Sedang–Berat Pasca Operasi Ortopedi",
+        complaints: [
+          "nyeri tajam pada area luka operasi fraktur dengan skala nyeri 7/10 dan tampak meringis kesakitan",
+          "nyeri kolik ginjal akut skala 8/10 disertai gelisah dan peningkatan tekanan darah akibat nyeri"
+        ],
+        scenarios: [
+          { stock: 30, vol: 1, orders: [15, 30, 45] },
+          { stock: 60, vol: 2, orders: [15, 30, 45] }
+        ],
+        functionText: "Menghambat enzim siklooksigenase (COX-1 & COX-2) sehingga menekan pembentukan prostaglandin pemicu nyeri dan inflamasi. Pantau fungsi ginjal, tanda perdarahan lambung, dan batasi penggunaan maksimal 5 hari."
+      },
+      {
+        drugName: "Ranitidine",
+        drugClass: "Antagonis Reseptor Histamin H2",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Gastritis Erosif Akut & Profilaksis Stress Ulcer",
+        complaints: [
+          "nyeri epigastrium perih seperti tertusuk disertai mual dan riwayat konsumsi obat antinyeri jangka panjang",
+          "rasa penuh di ulu hati, sendawa asam, dan nyeri tekan epigastrium saat palpasi"
+        ],
+        scenarios: [
+          { stock: 50, vol: 2, orders: [25, 50, 75] },
+          { stock: 50, vol: 5, orders: [25, 30, 40] }
+        ],
+        functionText: "Menghambat reseptor H2 pada sel parietal lambung untuk menurunkan volume dan kadar asam lambung. Berikan secara injeksi IV perlahan (minimal 2 menit) untuk mencegah bradikardia mendadak."
+      },
+      {
+        drugName: "Furosemide",
+        drugClass: "Diuretik Kuat (Loop Diuretic)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Gagal Jantung Kongestif (CHF) dengan Edema Paru Akut",
+        complaints: [
+          "sesak napas berat saat berbaring (ortopnea), ronki basah halus di basal paru, dan edema tungkai +3",
+          "kelebihan beban cairan (fluid overload) disertai peningkatan JVP dan penurunan haluaran urin"
+        ],
+        scenarios: [
+          { stock: 20, vol: 2, orders: [10, 20, 30, 40] },
+          { stock: 40, vol: 4, orders: [20, 30, 10, 40] }
+        ],
+        functionText: "Menghambat reabsorpsi natrium dan klorida di lengkung Henle asendens ginjal sehingga meningkatkan ekskresi cairan berlebih. Perawat wajib memantau tekanan darah, balance cairan/diuresis, serta kadar kalium serum (risiko hipokalemia)."
+      },
+      {
+        drugName: "Dexamethasone",
+        drugClass: "Kortikosteroid Sistemik (Glukokortikoid)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Reaksi Alergi Berat (Angioedema) & Edema Serebri",
+        complaints: [
+          "bengkak pada bibir dan kelopak mata disertai ruam urtikaria luas dan rasa tercekik setelah terpapar alergen",
+          "nyeri kepala hebat progresif akibat peningkatan tekanan intrakranial sekunder"
+        ],
+        scenarios: [
+          { stock: 5, vol: 1, orders: [2.5, 5, 7.5, 10] },
+          { stock: 10, vol: 2, orders: [5, 7.5, 2.5, 10] }
+        ],
+        functionText: "Menekan respon inflamasi dan reaksi hipersensitivitas imun dengan menstabilkan membran lisosom dan menghambat pelepasan mediator radang. Pantau kadar glukosa darah dan tanda iritasi lambung."
+      },
+      {
+        drugName: "Meropenem",
+        drugClass: "Antibiotik Golongan Karbapenem",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Sepsis Berat & Infeksi Nosokomial Multidrug-Resistant",
+        complaints: [
+          "demam 39,5°C, takikardia (HR 118 x/mnt), takipnea, dan peningkatan prokalsitonin pada pasien perawatan intensif",
+          "infeksi luka operasi dalam dengan eksudat purulen yang resisten terhadap antibiotik lini pertama"
+        ],
+        scenarios: [
+          { stock: 1000, vol: 10, orders: [500, 750, 250, 1000] },
+          { stock: 500, vol: 10, orders: [250, 300, 400, 500] }
+        ],
+        functionText: "Antibiotik spektrum sangat luas golongan karbapenem yang membunuh bakteri gram positif, gram negatif, dan anaerob berat. Berikan perlahan sesuai protokol infus intermiten dan monitor fungsi ginjal."
+      },
+      {
+        drugName: "Omeprazole",
+        drugClass: "Penghambat Pompa Proton (Proton Pump Inhibitor / PPI)",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Perdarahan Saluran Cerna Bagian Atas (Hematemesis Melena)",
+        complaints: [
+          "muntah darah berwarna kehitaman (coffee-ground) 2 kali disertai nyeri ulu hati hebat dan lemas",
+          "BAB hitam pekat (melena) dengan riwayat tukak peptikum aktif"
+        ],
+        scenarios: [
+          { stock: 40, vol: 10, orders: [20, 30, 40] },
+          { stock: 40, vol: 8, orders: [20, 30, 10] }
+        ],
+        functionText: "Menghambat enzim H+/K+ ATPase (pompa proton) secara ireversibel pada sel parietal lambung sehingga menekan sekresi asam lambung secara maksimal dan membantu stabilisasi bekuan darah di tukak."
+      },
+      {
+        drugName: "Gentamicin",
+        drugClass: "Antibiotik Golongan Aminoglikosida",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Pielonefritis Akut & Infeksi Saluran Kemih (ISK) Berat",
+        complaints: [
+          "demam menggigil, nyeri ketok sudut kostovertebra (nyeri pinggang), dan disuria berat",
+          "urin keruh disertai demam tinggi dan hasil kultur urin menunjukkan bakteri gram negatif sensitif aminoglikosida"
+        ],
+        scenarios: [
+          { stock: 80, vol: 2, orders: [40, 60, 80, 100] },
+          { stock: 40, vol: 2, orders: [20, 30, 40] }
+        ],
+        functionText: "Menghambat sintesis protein bakteri dengan berikatan pada subunit ribosom 30S. Perawat wajib mengobservasi tanda nefrotoksisitas (kreatinin/urin output) dan ototoksisitas (gangguan pendengaran/keseimbangan)."
+      },
+      {
+        drugName: "Ampicillin",
+        drugClass: "Antibiotik Golongan Penisilin Spektrum Luas",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Infeksi Saluran Empedu (Kolangitis) & Profilaksis Bedah",
+        complaints: [
+          "demam, nyeri perut kanan atas, dan sklera ikterik ringan sebelum tindakan dekompresi bilier",
+          "persiapan tindakan bedah abdomen bersih-terkontaminasi untuk mencegah infeksi luka operasi"
+        ],
+        scenarios: [
+          { stock: 1000, vol: 4, orders: [500, 750, 250, 1000] },
+          { stock: 500, vol: 5, orders: [250, 300, 400, 500] }
+        ],
+        functionText: "Membunuh bakteri yang sedang aktif membelah dengan menghambat pembentukan peptidoglikan dinding sel bakteri. Lakukan skin test terlebih dahulu bila pasien belum pernah mendapat antibiotik golongan penisilin."
+      },
+      {
+        drugName: "Hydrocortisone",
+        drugClass: "Kortikosteroid Kerja Singkat",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Asma Bronkial Eksaserbasi Akut & Syok Anafilaktik",
+        complaints: [
+          "sesak napas berat, mengi (wheezing) ekspirasi terdengar jelas, dan penggunaan otot bantu napas",
+          "penurunan tekanan darah mendadak disertai bronkospasme akibat reaksi hipersensitivitas obat"
+        ],
+        scenarios: [
+          { stock: 100, vol: 2, orders: [50, 75, 25, 100] },
+          { stock: 100, vol: 4, orders: [50, 75, 25, 100] }
+        ],
+        functionText: "Mengurangi inflamasi jalan napas, menurunkan edema mukosa bronkus, dan meningkatkan responsivitas reseptor beta-2 terhadap bronkodilator pada serangan asma berat."
+      },
+      {
+        drugName: "Methylprednisolone",
+        drugClass: "Kortikosteroid Antiinflamasi Poten",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Eksaserbasi Akut PPOK & Reaksi Inflamasi Sistemik",
+        complaints: [
+          "peningkatan sesak napas, batuk kronis memburuk, dan penurunan saturasi oksigen hingga 89%",
+          "nyeri dan pembengkakan sendi akut pada flare penyakit autoimun sistemik"
+        ],
+        scenarios: [
+          { stock: 125, vol: 2, orders: [62.5, 125] },
+          { stock: 125, vol: 5, orders: [25, 50, 75, 100] }
+        ],
+        functionText: "Menekan migrasi leukosit polimorfonuklear dan membalikkan peningkatan permeabilitas kapiler sehingga meredakan peradangan jaringan secara cepat."
+      },
+      {
+        drugName: "Metoclopramide",
+        drugClass: "Prokinetik & Antiemetik (Antagonis Dopamin D2)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Gastroparesis Diabetik & Muntah Akut",
+        complaints: [
+          "perut kembung berat, cepat kenyang, dan muntah makanan yang belum tercerna",
+          "mual muntah akut disertai perlambatan pengosongan lambung"
+        ],
+        scenarios: [
+          { stock: 10, vol: 2, orders: [5, 7.5, 10, 15] },
+          { stock: 10, vol: 1, orders: [5, 10, 15] }
+        ],
+        functionText: "Meningkatkan motilitas saluran cerna bagian atas, mempercepat pengosongan lambung, serta memblokir reseptor dopamin di zona pemicu kemoreseptor (CTZ). Awasi risiko efek ekstrapiramidal bila diberikan terlalu cepat."
+      },
+      {
+        drugName: "Amikacin",
+        drugClass: "Antibiotik Aminoglikosida",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Infeksi Bakteri Gram Negatif Resisten (HAP/VAP)",
+        complaints: [
+          "demam persisten hari ke-5 perawatan dengan dahak kental dan infiltrat baru pada foto toraks",
+          "infeksi saluran kemih berkomplikasi dengan hasil kultur resisten gentamisin namun sensitif amikasin"
+        ],
+        scenarios: [
+          { stock: 500, vol: 2, orders: [250, 300, 375, 500] },
+          { stock: 250, vol: 2, orders: [125, 150, 200, 250] }
+        ],
+        functionText: "Antibiotik aminoglikosida spektrum luas untuk infeksi berat akibat basil gram negatif aerob. Pantau kadar kreatinin serum dan haluaran urin harian pasien."
+      },
+      {
+        drugName: "Diazepam",
+        drugClass: "Benzodiazepin (Antikonvulsan & Sedatif)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Status Epileptikus / Kejang Tonik-Klonik Akut",
+        complaints: [
+          "kejang kelojotan seluruh tubuh berlangsung >3 menit disertai penurunan kesadaran di ruang IGD",
+          "kejang berulang tanpa pemulihan kesadaran di antara episode kejang"
+        ],
+        scenarios: [
+          { stock: 10, vol: 2, orders: [5, 7.5, 10] },
+          { stock: 10, vol: 1, orders: [5, 10] }
+        ],
+        functionText: "Meningkatkan kerja neurotransmiter penghambat GABA di sistem saraf pusat sehingga menghentikan aktivitas listrik abnormal penyebab kejang. Berikan perlahan (maksimal 5 mg/menit) dan siapkan alat bantu napas untuk antisipasi depresi pernapasan."
+      },
+      {
+        drugName: "Tramadol",
+        drugClass: "Analgesik Opioid Lemah (Agonis Reseptor Mu)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Nyeri Sedang–Berat Pasca Bedah Digestif",
+        complaints: [
+          "nyeri luka insisi laparotomi skala 6–7/10 saat bergerak atau batuk efektif",
+          "nyeri punggung bawah berat akibat kompresi saraf akut"
+        ],
+        scenarios: [
+          { stock: 100, vol: 2, orders: [50, 75, 100] },
+          { stock: 50, vol: 1, orders: [25, 50, 75] }
+        ],
+        functionText: "Berikatan dengan reseptor opioid-µ di SSP serta menghambat reuptake serotonin dan norepinefrin untuk memblokir transmisi sinyal nyeri. Observasi frekuensi napas dan tingkat sedasi pasien."
+      },
+      {
+        drugName: "Aminophylline",
+        drugClass: "Bronkodilator Golongan Metilxantin",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Status Asmatikus & Bronkospasme Refrakter",
+        complaints: [
+          "sesak napas berat yang belum membaik optimal dengan nebulisasi agonis beta-2, disertai mengi difus",
+          "ekspirasi memanjang dan takipnea (RR 30 x/mnt) akibat penyempitan bronkus"
+        ],
+        scenarios: [
+          { stock: 240, vol: 10, orders: [120, 180, 60, 240] },
+          { stock: 240, vol: 5, orders: [120, 144, 192, 240] }
+        ],
+        functionText: "Merelaksasi otot polos bronkus dan pembuluh darah paru melalui penghambatan enzim fosfodiesterase. Wajib diberikan perlahan karena indeks terapinya sempit dan berisiko memicu takikardia/aritmia."
+      }
+    ];
+
+    // B. TEMPLATE OBAT ANAK & BAYI (TERMASUK HITUNGAN kgBB) - 17 SOAL (No. 19 - 35)
+    const PEDIATRIC_DRUG_TEMPLATES = [
+      {
+        drugName: "Cefotaxime",
+        drugClass: "Antibiotik Sefalosporin Generasi ke-3",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Bronkopneumonia Akut pada Anak",
+        patientAge: "3 tahun",
+        weightKg: 15,
+        dosePerKg: 20, // 20 x 15 = 300 mg
+        stock: 500,
+        vol: 5,
+        complaint: "demam 39°C, batuk berdahak, napas cepat (RR 42 x/mnt), dan retraksi dinding dada ringan",
+        functionText: "Antibiotik bakterisidal untuk mengatasi infeksi bakteri saluran pernapasan bawah pada anak. Pastikan pelarutan serbuk sempurna dan injeksikan perlahan sesuai protokol pediatrik."
+      },
+      {
+        drugName: "Ondansetron",
+        drugClass: "Antiemetik (Antagonis 5-HT3)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Gastroenteritis Akut (GEA) dengan Muntah Profus",
+        patientAge: "5 tahun",
+        weightKg: 20,
+        dosePerKg: 0.15, // 0.15 x 20 = 3 mg
+        stock: 4,
+        vol: 2,
+        complaint: "muntah setiap kali diberi minum (>7 kali sejak tadi pagi), tampak lemas, dan bibir kering",
+        functionText: "Menghentikan refleks muntah pada anak dengan gastroenteritis akut sehingga rehidrasi oral maupun parenteral dapat berjalan efektif."
+      },
+      {
+        drugName: "Ceftriaxone",
+        drugClass: "Antibiotik Sefalosporin Generasi ke-3",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Demam Tifoid Anak & Infeksi Bakteri Sistemik",
+        patientAge: "4 tahun",
+        weightKg: 16,
+        dosePerKg: 25, // 25 x 16 = 400 mg
+        stock: 1000,
+        vol: 10,
+        complaint: "demam tinggi hari ke-6 disertai nyeri perut, nafsu makan menurun drastis, dan konstipasi",
+        functionText: "Mengatasi infeksi bakteri sistemik seperti demam tifoid pada pasien pediatrik. Jangan dicampur dengan larutan infus mengandung kalsium (Ringer Laktat)."
+      },
+      {
+        drugName: "Dexamethasone",
+        drugClass: "Kortikosteroid Antiinflamasi",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Croup (Laringotrakeobronkitis Akut)",
+        patientAge: "2 tahun",
+        weightKg: 12,
+        dosePerKg: 0.25, // 0.25 x 12 = 3 mg
+        stock: 5,
+        vol: 1,
+        complaint: "batuk menggonggong (barking cough), suara serak, dan stridor inspirasi saat anak menangis",
+        functionText: "Mengurangi edema dan pembengkakan mukosa laring serta subglotis pada anak dengan croup sehingga jalan napas kembali lapang."
+      },
+      {
+        drugName: "Gentamicin",
+        drugClass: "Antibiotik Aminoglikosida",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Infeksi Saluran Kemih (ISK) Demam pada Bayi",
+        patientAge: "8 bulan",
+        weightKg: 8,
+        dosePerKg: 2.5, // 2.5 x 8 = 20 mg
+        stock: 80,
+        vol: 2,
+        complaint: "demam tinggi tanpa sumber infeksi saluran napas yang jelas, rewel saat berkemih, dan hasil urinalisis leukosituria",
+        functionText: "Antibiotik untuk bakteri gram negatif penyebab ISK pada bayi. Perawat perlu memantau frekuensi BAK (popok basah) untuk evaluasi fungsi ginjal."
+      },
+      {
+        drugName: "Ampicillin",
+        drugClass: "Antibiotik Golongan Penisilin",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Sepsis Neonatorum Awitan Dini",
+        patientAge: "10 hari (Neonatus)",
+        weightKg: 3.5,
+        dosePerKg: 50, // 50 x 3.5 = 175 mg -> (175/500)*4 = 1.4 ml -> kita pakai BB 4 kg: 50 x 4 = 200 mg -> (200/500)*5 = 2 ml!
+        stock: 500,
+        vol: 5,
+        complaint: "bayi tampak letargi, malas menyusu, suhu tubuh tidak stabil (38,4°C), dan takipnea",
+        functionText: "Lini pertama antibiotik empiris pada sepsis neonatorum untuk melawan bakteri Streptococcus grup B dan Listeria."
+      },
+      {
+        drugName: "Ranitidine",
+        drugClass: "Antagonis Reseptor H2",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Gastritis Akut & Muntah Asam pada Anak",
+        patientAge: "6 tahun",
+        weightKg: 20,
+        dosePerKg: 1, // 1 x 20 = 20 mg
+        stock: 50,
+        vol: 2,
+        complaint: "nyeri ulu hati hebat setelah mengonsumsi makanan pedas/asam disertai mual",
+        functionText: "Menurunkan produksi asam lambung dan melindungi mukosa gaster anak dari iritasi lebih lanjut."
+      },
+      {
+        drugName: "Furosemide",
+        drugClass: "Diuretik Kuat (Loop Diuretic)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Penyakit Jantung Bawaan (VSD) dengan Gagal Jantung",
+        patientAge: "1 tahun",
+        weightKg: 10,
+        dosePerKg: 1, // 1 x 10 = 10 mg
+        stock: 20,
+        vol: 2,
+        complaint: "napas cepat saat menyusu, berkeringat dingin di dahi, dan edema periorbital ringan",
+        functionText: "Mengurangi kongesti paru dan kelebihan cairan pada bayi/anak dengan kelainan jantung bawaan. Timbang berat badan dan hitung balance cairan ketat."
+      },
+      {
+        drugName: "Meropenem",
+        drugClass: "Antibiotik Karbapenem",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Meningitis Bakterialis Akut pada Anak",
+        patientAge: "7 tahun",
+        weightKg: 25,
+        dosePerKg: 20, // 20 x 25 = 500 mg
+        stock: 1000,
+        vol: 10,
+        complaint: "demam tinggi, nyeri kepala hebat, kaku kuduk positif, dan fotofobia",
+        functionText: "Menembus sawar darah otak (blood-brain barrier) dengan baik untuk membasmi bakteri penyebab meningitis pada anak."
+      },
+      {
+        drugName: "Diazepam",
+        drugClass: "Benzodiazepin (Antikonvulsan)",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Kejang Demam Kompleks",
+        patientAge: "3 tahun",
+        weightKg: 15,
+        dosePerKg: 0.2, // 0.2 x 15 = 3 mg -> (3/10)*2 = 0.6 ml
+        stock: 10,
+        vol: 2,
+        complaint: "kejang seluruh tubuh selama 4 menit saat suhu tubuh mencapai 39,6°C, mata mendelik ke atas",
+        functionText: "Menghentikan kejang demam akut pada anak secara cepat dengan menekan cetusan listrik abnormal di otak. Pantau patensi jalan napas dan saturasi O2."
+      },
+      {
+        drugName: "Hydrocortisone",
+        drugClass: "Kortikosteroid Sistemik",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Serangan Asma Akut Sedang–Berat pada Anak",
+        patientAge: "4 tahun",
+        weightKg: 15,
+        dosePerKg: 2, // 2 x 15 = 30 mg -> (30/100)*5 = 1.5 ml
+        stock: 100,
+        vol: 5,
+        complaint: "sesak napas, bicara hanya sepenggal kata, wheezing ekspirasi nyaring, dan SpO2 91%",
+        functionText: "Meredakan peradangan saluran napas dan mempercepat pemulihan fungsi paru pada serangan asma anak."
+      },
+      {
+        drugName: "Methylprednisolone",
+        drugClass: "Kortikosteroid Antiinflamasi",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Sindrom Nefrotik Relaps / Reaksi Inflamasi Akut",
+        patientAge: "5 tahun",
+        weightKg: 25,
+        dosePerKg: 1, // 1 x 25 = 25 mg -> (25/125)*5 = 1 ml
+        stock: 125,
+        vol: 5,
+        complaint: "edema anasarka (bengkak seluruh tubuh), proteinuria +4, dan hipoalbuminemia",
+        functionText: "Menekan proses imunologis yang merusak glomerulus ginjal sehingga mengurangi kebocoran protein dalam urin."
+      },
+      {
+        drugName: "Omeprazole",
+        drugClass: "Penghambat Pompa Proton (PPI)",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Tukak Lambung Akibat Stres Fisiologis Berat",
+        patientAge: "8 tahun",
+        weightKg: 25,
+        dosePerKg: 0.4, // 0.4 x 25 = 10 mg -> (10/40)*10 = 2.5 ml
+        stock: 40,
+        vol: 10,
+        complaint: "nyeri epigastrium hebat disertai muntah kecokelatan saat dirawat di ruang intensif anak",
+        functionText: "Menekan sekresi asam lambung secara kuat untuk menyembuhkan erosi mukosa gaster pada anak."
+      },
+      {
+        drugName: "Amikacin",
+        drugClass: "Antibiotik Aminoglikosida",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Pneumonia Nosokomial pada Anak",
+        patientAge: "6 tahun",
+        weightKg: 20,
+        dosePerKg: 7.5, // 7.5 x 20 = 150 mg -> (150/250)*2 = 1.2 ml
+        stock: 250,
+        vol: 2,
+        complaint: "demam tinggi kembali muncul setelah 4 hari perawatan disertai dahak purulen",
+        functionText: "Antibiotik pilihan untuk bakteri gram negatif berat pada pasien pediatrik. Pantau fungsi ginjal dan pendengaran."
+      },
+      {
+        drugName: "Cefazolin",
+        drugClass: "Antibiotik Sefalosporin Generasi ke-1",
+        formType: "Vial",
+        unit: "mg",
+        diagnosis: "Profilaksis Bedah Herniotomi / Apendektomi Anak",
+        patientAge: "5 tahun",
+        weightKg: 20,
+        dosePerKg: 25, // 25 x 20 = 500 mg -> (500/1000)*5 = 2.5 ml
+        stock: 1000,
+        vol: 5,
+        complaint: "pasien anak dijadwalkan menjalani operasi hernia inguinalis dalam 30 menit ke depan",
+        functionText: "Antibiotik profilaksis bedah untuk mencegah infeksi luka operasi oleh bakteri flora kulit (Staphylococcus)."
+      },
+      {
+        drugName: "Ketorolac",
+        drugClass: "Analgesik OAINS",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Nyeri Akut Pasca Operasi Apendektomi Anak",
+        patientAge: "10 tahun",
+        weightKg: 30,
+        dosePerKg: 0.5, // 0.5 x 30 = 15 mg -> (15/30)*1 = 0.5 ml
+        stock: 30,
+        vol: 1,
+        complaint: "anak mengeluh nyeri pada luka operasi perut kanan bawah dengan skala nyeri Wong-Baker 6",
+        functionText: "Meredakan nyeri sedang hingga berat pasca operasi pada anak tanpa menyebabkan efek sedasi atau depresi napas."
+      },
+      {
+        drugName: "Vitamin K1 (Phytomenadione)",
+        drugClass: "Vitamin Larut Lemak / Koagulan",
+        formType: "Ampul",
+        unit: "mg",
+        diagnosis: "Profilaksis Perdarahan Akibat Defisiensi Vitamin K (PDVK)",
+        patientAge: "Bayi Baru Lahir (1 jam)",
+        weightKg: 3.2,
+        dosePerKg: null, // Dosis tetap 1 mg
+        fixedOrder: 1,
+        stock: 2,
+        vol: 1,
+        complaint: "bayi baru lahir bugar mendapatkan asuhan neonatal esensial segera setelah lahir",
+        functionText: "Mengaktifkan faktor pembekuan darah II, VII, IX, dan X di hati untuk mencegah perdarahan intrakranial maupun saluran cerna pada bayi baru lahir."
+      }
+    ];
+
+    // C. TEMPLATE TETESAN INFUS DEWASA & ANAK (MAKRO & MIKRO) - 15 SOAL (No. 36 - 50)
+    const INFUSION_TEMPLATES = [
+      // Makrodrip 20 tetes/ml (Dewasa)
+      {
+        patientGroup: "Dewasa",
+        patientDesc: "Pasien dewasa (34 tahun)",
+        diagnosis: "Demam Berdarah Dengue (DBD) Grade II",
+        complaint: "demam hari ke-4, nyeri ulu hati, trombosit 68.000/µL, dan hematokrit meningkat 22%",
+        fluidName: "Ringer Laktat (RL)",
+        setType: "Makrodrip",
+        dropFactor: 20,
+        cases: [
+          { vol: 500, hours: 4 },  // (500*20)/(4*60) = 10000/240 = 41.66 -> pilih yang bulat!
+          { vol: 600, hours: 5 },  // (600*20)/(5*60) = 12000/300 = 40 TPM
+          { vol: 500, hours: 5 },  // (500*20)/300 = 33.3 -> ganti kombinasi bulat di bawah
+        ],
+        exactPairs: [
+          { vol: 600, hours: 5 },  // 40 TPM
+          { vol: 1200, hours: 8 }, // 50 TPM
+          { vol: 1500, hours: 10 },// 50 TPM
+          { vol: 900, hours: 6 }   // 50 TPM
+        ],
+        functionText: "Cairan kristaloid isotonik untuk mengganti volume plasma yang hilang akibat kebocoran kapiler pada DBD serta mencegah syok hipovolemik."
+      },
+      {
+        patientGroup: "Dewasa",
+        patientDesc: "Pasien dewasa (45 tahun)",
+        diagnosis: "Dehidrasi Sedang akibat Gastroenteritis Akut",
+        complaint: "BAB cair >10 kali sejak kemarin, turgor kulit kembali lambat, mata cekung, dan haus",
+        fluidName: "NaCl 0,9% (Normal Saline)",
+        setType: "Makrodrip",
+        dropFactor: 20,
+        exactPairs: [
+          { vol: 1500, hours: 8 }, // (1500*20)/(8*60) = 30000/480 = 62.5 -> pakai yang bulat:
+          { vol: 1800, hours: 10 },// (1800*20)/600 = 60 TPM
+          { vol: 1200, hours: 8 }, // 50 TPM
+          { vol: 600, hours: 4 }   // 50 TPM
+        ],
+        functionText: "Larutan kristaloid isotonik untuk memulihkan volume cairan ekstraseluler dan menjaga perfusi jaringan pada pasien dehidrasi."
+      },
+      {
+        patientGroup: "Dewasa",
+        patientDesc: "Pasien dewasa (52 tahun)",
+        diagnosis: "Hipotensi & Syok Hipovolemik Awal Pasca Perdarahan",
+        complaint: "pusing berkunang-kunang, akral dingin, TD 88/56 mmHg, dan nadi 112 x/menit",
+        fluidName: "Ringer Laktat (RL)",
+        setType: "Makrodrip",
+        dropFactor: 15,
+        exactPairs: [
+          { vol: 1000, hours: 5 }, // (1000*15)/(5*60) = 15000/300 = 50 TPM
+          { vol: 800, hours: 4 },  // (800*15)/240 = 12000/240 = 50 TPM
+          { vol: 1200, hours: 6 }  // (1200*15)/360 = 18000/360 = 50 TPM
+        ],
+        functionText: "Resusitasi cairan cepat untuk meningkatkan volume intravaskular, curah jantung, dan tekanan darah sistolik."
+      },
+      {
+        patientGroup: "Dewasa",
+        patientDesc: "Pasien dewasa (28 tahun)",
+        diagnosis: "Hiperemesis Gravidarum / Intake Oral Sulit",
+        complaint: "mual muntah berat sejak 2 hari lalu, lemas, keton urin +2, dan tidak mampu makan/minum",
+        fluidName: "Dextrose 5% (D5%)",
+        setType: "Makrodrip",
+        dropFactor: 20,
+        exactPairs: [
+          { vol: 1500, hours: 24 }, // (1500*20)/(24*60) = 30000/1440 = 20.8 -> gunakan bulat:
+          { vol: 1440, hours: 24 }, // (1440*20)/1440 = 20 TPM
+          { vol: 2160, hours: 24 }, // (2160*20)/1440 = 30 TPM
+          { vol: 1800, hours: 20 }  // (1800*20)/1200 = 30 TPM
+        ],
+        functionText: "Menyediakan kebutuhan cairan rumatan dan sumber kalori karbohidrat sederhana untuk mencegah pemecahan lemak berlebihan (ketosis)."
+      },
+      {
+        patientGroup: "Dewasa",
+        patientDesc: "Pasien dewasa (60 tahun)",
+        diagnosis: "Post-Operasi Laparotomi Eksplorasi (Puasa)",
+        complaint: "pasien masih dipuasakan pasca operasi saluran cerna, bising usus belum terdengar normal",
+        fluidName: "Ringer Asetat / Asering",
+        setType: "Makrodrip",
+        dropFactor: 15,
+        exactPairs: [
+          { vol: 1600, hours: 20 }, // (1600*15)/(20*60) = 24000/1200 = 20 TPM
+          { vol: 2000, hours: 20 }, // (2000*15)/1200 = 25 TPM
+          { vol: 1200, hours: 10 }  // (1200*15)/600 = 30 TPM
+        ],
+        functionText: "Memenuhi kebutuhan cairan dan elektrolit harian selama pasien menjalani puasa perioperatif serta menjaga keseimbangan asam-basa."
+      },
+      {
+        patientGroup: "Dewasa",
+        patientDesc: "Pasien dewasa (39 tahun)",
+        diagnosis: "Luka Bakar Derajat II (Luas 20% TBSA)",
+        complaint: "luka bakar akibat tersiram air panas pada lengan dan dada, tampak bula dan nyeri hebat",
+        fluidName: "Ringer Laktat (RL)",
+        setType: "Makrodrip",
+        dropFactor: 20,
+        exactPairs: [
+          { vol: 2400, hours: 8 },  // (2400*20)/(8*60) = 48000/480 = 100 TPM
+          { vol: 1800, hours: 8 },  // (1800*20)/480 = 75 TPM
+          { vol: 1200, hours: 8 }   // (1200*20)/480 = 50 TPM
+        ],
+        functionText: "Mengganti kehilangan cairan masif akibat peningkatan permeabilitas kapiler pada fase akut luka bakar (Formula Baxter/Parkland)."
+      },
+      {
+        patientGroup: "Dewasa",
+        patientDesc: "Pasien dewasa (48 tahun)",
+        diagnosis: "Krisis Hiperglikemia (KAD) Fase Rehidrasi Awal",
+        complaint: "poliuria, polidipsia, napas cepat dan dalam (Kussmaul), GDS 410 mg/dL, turgor menurun",
+        fluidName: "NaCl 0,9%",
+        setType: "Makrodrip",
+        dropFactor: 20,
+        exactPairs: [
+          { vol: 900, hours: 3 },   // (900*20)/(3*60) = 18000/180 = 100 TPM
+          { vol: 600, hours: 2 },   // (600*20)/120 = 100 TPM
+          { vol: 450, hours: 3 }    // (450*20)/180 = 50 TPM
+        ],
+        functionText: "Memperbaiki perfusi jaringan dan menurunkan osmolaritas serum secara bertahap sebelum pemberian insulin infus."
+      },
+      {
+        patientGroup: "Dewasa",
+        patientDesc: "Pasien dewasa (55 tahun)",
+        diagnosis: "Stroke Iskemik Akut (Rumatan Cairan)",
+        complaint: "kelemahan anggota gerak kanan mendadak, disfagia ringan sehingga risiko aspirasi bila minum oral",
+        fluidName: "NaCl 0,9%",
+        setType: "Makrodrip",
+        dropFactor: 15,
+        exactPairs: [
+          { vol: 1600, hours: 20 }, // 20 TPM
+          { vol: 1200, hours: 15 }, // (1200*15)/900 = 20 TPM
+          { vol: 1500, hours: 15 }  // (1500*15)/900 = 25 TPM
+        ],
+        functionText: "Menjaga status normovolemia agar perfusi darah ke area penumbra otak tetap optimal tanpa memperberat edema serebri."
+      },
+      // Mikrodrip 60 tetes/ml (Anak & Bayi)
+      {
+        patientGroup: "Anak",
+        patientDesc: "Pasien anak usia 3 tahun (BB 14 kg)",
+        diagnosis: "Gastroenteritis Akut dengan Dehidrasi Ringan–Sedang",
+        complaint: "diare cair 8 kali sehari, anak tampak rewel, kehausan, dan air mata berkurang",
+        fluidName: "KA-EN 3B",
+        setType: "Mikrodrip",
+        dropFactor: 60,
+        exactPairs: [
+          { vol: 500, hours: 10 },  // (500*60)/(10*60) = 50 TPM mikro
+          { vol: 400, hours: 8 },   // 50 TPM mikro
+          { vol: 600, hours: 12 }   // 50 TPM mikro
+        ],
+        functionText: "Cairan rumatan pediatrik yang mengandung natrium, kalium, dan glukosa untuk mengganti kehilangan elektrolit akibat diare pada anak."
+      },
+      {
+        patientGroup: "Anak",
+        patientDesc: "Pasien anak usia 5 tahun (BB 18 kg)",
+        diagnosis: "Demam Berdarah Dengue (DBD) pada Anak",
+        complaint: "demam tinggi hari ke-4, mimisan ringan, nyeri perut, dan trombosit 72.000/µL",
+        fluidName: "Ringer Laktat (RL)",
+        setType: "Mikrodrip",
+        dropFactor: 60,
+        exactPairs: [
+          { vol: 450, hours: 6 },   // (450*60)/(6*60) = 75 TPM mikro
+          { vol: 360, hours: 6 },   // 60 TPM mikro
+          { vol: 540, hours: 6 }    // 90 TPM mikro
+        ],
+        functionText: "Mempertahankan volume intravaskular pada masa kritis DBD anak. Set mikrodrip (60 tetes/ml) digunakan agar tetesan terkontrol akurat dan mencegah kelebihan cairan (overload)."
+      },
+      {
+        patientGroup: "Anak",
+        patientDesc: "Pasien bayi usia 9 bulan (BB 8,5 kg)",
+        diagnosis: "Bronkopneumonia Berat pada Bayi",
+        complaint: "sesak napas, napas cuping hidung, batuk berdahak, dan asupan ASI menurun",
+        fluidName: "D5 1/4 NS",
+        setType: "Mikrodrip",
+        dropFactor: 60,
+        exactPairs: [
+          { vol: 360, hours: 12 },  // 30 TPM mikro
+          { vol: 300, hours: 10 },  // 30 TPM mikro
+          { vol: 480, hours: 16 }   // 30 TPM mikro
+        ],
+        functionText: "Memenuhi kebutuhan cairan rumatan bayi yang mengalami peningkatan kehilangan cairan insensible (IWL) akibat demam dan takipnea."
+      },
+      {
+        patientGroup: "Anak",
+        patientDesc: "Pasien anak usia 2 tahun (BB 12 kg)",
+        diagnosis: "Kejang Demam Sederhana (Observasi Rawat Inap)",
+        complaint: "demam 39,2°C pasca kejang 2 menit, anak tampak mengantuk dan malas minum",
+        fluidName: "D5 1/2 NS",
+        setType: "Mikrodrip",
+        dropFactor: 60,
+        exactPairs: [
+          { vol: 400, hours: 10 },  // 40 TPM mikro
+          { vol: 480, hours: 12 },  // 40 TPM mikro
+          { vol: 320, hours: 8 }    // 40 TPM mikro
+        ],
+        functionText: "Menjaga hidrasi dan kadar glukosa darah anak selama masa observasi demam serta menjadi akses vena bila diperlukan obat antikejang."
+      },
+      {
+        patientGroup: "Anak",
+        patientDesc: "Pasien anak usia 6 tahun (BB 20 kg)",
+        diagnosis: "Post-Operasi Apendektomi Anak",
+        complaint: "anak dalam pemulihan pasca operasi usus buntu dan masih dipuasakan hingga bising usus aktif",
+        fluidName: "KA-EN 1B",
+        setType: "Mikrodrip",
+        dropFactor: 60,
+        exactPairs: [
+          { vol: 500, hours: 8 },   // 62.5 -> ganti yang bulat:
+          { vol: 480, hours: 8 },   // 60 TPM mikro
+          { vol: 600, hours: 10 },  // 60 TPM mikro
+          { vol: 360, hours: 6 }    // 60 TPM mikro
+        ],
+        functionText: "Cairan hidrasi awal bebas kalium yang aman diberikan pada fase awal pasca operasi sebelum fungsi ginjal/diuresis dievaluasi penuh."
+      },
+      {
+        patientGroup: "Anak",
+        patientDesc: "Pasien bayi usia 4 bulan (BB 6 kg)",
+        diagnosis: "Diare Akut Tanpa Dehidrasi Berat (Risiko Dehidrasi)",
+        complaint: "BAB cair 6 kali sejak pagi, bayi masih mau minum namun tampak cepat lelah",
+        fluidName: "D5 1/4 NS",
+        setType: "Mikrodrip",
+        dropFactor: 60,
+        exactPairs: [
+          { vol: 250, hours: 10 },  // 25 TPM mikro
+          { vol: 300, hours: 12 },  // 25 TPM mikro
+          { vol: 200, hours: 8 }    // 25 TPM mikro
+        ],
+        functionText: "Memberikan cairan dan glukosa rumatan sesuai berat badan bayi agar tidak jatuh ke kondisi dehidrasi berat maupun hipoglikemia."
+      },
+      {
+        patientGroup: "Anak",
+        patientDesc: "Pasien anak usia 8 tahun (BB 24 kg)",
+        diagnosis: "Demam Tifoid Anak dengan Muntah",
+        complaint: "demam hari ke-5, mual muntah setiap makan, dan lidah tampak berselaput putih",
+        fluidName: "Ringer Laktat (RL)",
+        setType: "Mikrodrip",
+        dropFactor: 60,
+        exactPairs: [
+          { vol: 650, hours: 10 },  // 65 TPM mikro
+          { vol: 520, hours: 8 },   // 65 TPM mikro
+          { vol: 780, hours: 12 }   // 65 TPM mikro
+        ],
+        functionText: "Mempertahankan keseimbangan cairan dan elektrolit anak dengan demam tinggi berkepanjangan serta memfasilitasi pemberian antibiotik intravena."
+      }
+    ];
+
+    /**
+     * Membuat 4 pilihan jawaban (1 benar + 3 pengecoh realistis) secara deterministik
+     * dan memastikan tidak ada opsi kembar, format angka konsisten, serta bebas infinite loop.
+     */
+    function buildOptionsWithExactAnswer(rng, exactValue, unitLabel, candidateDistractors) {
+      const cleanExact = Math.round(exactValue * 1000) / 1000;
+      const exactFormatted = `${formatDecimalID(cleanExact)} ${unitLabel}`;
+      const uniqueDistractors = [];
+
+      const tryAddDistractor = (val) => {
+        if (typeof val !== 'number' || !Number.isFinite(val) || val <= 0) return;
+        const roundedVal = Math.round(val * 1000) / 1000;
+        if (Math.abs(roundedVal - cleanExact) <= 0.001) return;
+        const formatted = `${formatDecimalID(roundedVal)} ${unitLabel}`;
+        if (formatted !== exactFormatted && !uniqueDistractors.includes(formatted)) {
+          uniqueDistractors.push(formatted);
+        }
+      };
+
+      // 1. Evaluasi daftar pengecoh kandidat utama
+      for (const d of candidateDistractors) {
+        tryAddDistractor(d);
+        if (uniqueDistractors.length === 3) break;
+      }
+
+      // 2. Fallback deterministik dari offset numerik bersih
+      if (uniqueDistractors.length < 3) {
+        const deterministicFallbacks = unitLabel === 'TPM'
+          ? [cleanExact + 5, cleanExact + 10, cleanExact + 15, cleanExact + 20, Math.max(5, cleanExact - 5), cleanExact * 2]
+          : [cleanExact + 0.5, cleanExact + 1, cleanExact + 1.5, cleanExact + 2, cleanExact * 2, cleanExact / 2];
+
+        for (const fb of deterministicFallbacks) {
+          tryAddDistractor(fb);
+          if (uniqueDistractors.length === 3) break;
+        }
+      }
+
+      // 3. Cadangan pengecoh dengan batas guard ketat agar tidak pernah infinite loop
+      const step = unitLabel === 'TPM' ? 5 : 0.25;
+      let multiplier = 1;
+      let guard = 0;
+      while (uniqueDistractors.length < 3 && guard < 200) {
+        const candidate = Math.round((cleanExact + step * multiplier) * 1000) / 1000;
+        tryAddDistractor(candidate);
+        multiplier++;
+        guard++;
+      }
+
+      // 4. Jaminan absolut 3 pengecoh bila terjadi kondisi ekstrem
+      let emergencyIdx = 1;
+let emergencyGuard = 0;
+
+while (uniqueDistractors.length < 3 && emergencyGuard < 500) {
+  const baseVal = Number.isFinite(cleanExact) ? cleanExact : 1;
+  const fallbackLabel = `${formatDecimalID(baseVal + emergencyIdx)} ${unitLabel}`.trim();
+
+  if (
+    fallbackLabel &&
+    fallbackLabel !== exactFormatted &&
+    !uniqueDistractors.includes(fallbackLabel)
+  ) {
+    uniqueDistractors.push(fallbackLabel);
+  }
+
+  emergencyIdx++;
+  emergencyGuard++;
+}
+
+// Pengaman terakhir jika masih kurang dari 3 (misalnya saat debug/data ekstrem)
+while (uniqueDistractors.length < 3) {
+  uniqueDistractors.push(`Opsi ${uniqueDistractors.length + 1}`);
+}
+
+      const combined = [
+        { text: exactFormatted, isCorrect: true },
+        ...uniqueDistractors.map(t => ({ text: t, isCorrect: false }))
+      ];
+
+      const shuffled = seededShuffle(rng, combined);
+      const correctIndex = shuffled.findIndex(item => item.isCorrect);
+
+      return {
+        options: shuffled.map(item => item.text),
+        correctIndex
+      };
+    }
+
+    /**
+     * Menghasilkan paket lengkap 50 soal berdasarkan seed string tertentu.
+     */
+    function generateQuestionPack(seedString, packLabel) {
+      const rng = mulberry32(stringToSeed(seedString)());
+      const questions = [];
+
+      // 1. GENERATE 18 SOAL DOSIS DEWASA (No. 1 - 18)
+      const shuffledAdult = seededShuffle(rng, ADULT_DRUG_TEMPLATES);
+      for (let i = 0; i < 18; i++) {
+        const tpl = shuffledAdult[i % shuffledAdult.length];
+        const scenario = seededPick(rng, tpl.scenarios);
+        const orderDose = seededPick(rng, scenario.orders);
+        const age = 24 + Math.floor(rng() * 44); // Usia 24 - 67 tahun
+        const complaint = seededPick(rng, tpl.complaints);
+
+        // Rumus eksak: (Dosis Diminta / Sediaan Obat) * Volume
+        const exactMl = Math.round(((orderDose / scenario.stock) * scenario.vol) * 1000) / 1000;
+
+        // Pengecoh logis (misal: rumus terbalik, lupa dikali volume, atau selisih 0,5 ml)
+        const distractors = [
+          Math.round(((scenario.stock / orderDose) * scenario.vol) * 100) / 100,
+          Math.round((orderDose / scenario.stock) * 100) / 100,
+          Math.round((exactMl + 0.5) * 100) / 100,
+          Math.round((exactMl - 0.5) * 100) / 100,
+          Math.round((exactMl * 2) * 100) / 100,
+          Math.round((exactMl + 1) * 100) / 100
+        ];
+
+        const { options, correctIndex } = buildOptionsWithExactAnswer(rng, exactMl, 'ml', distractors);
+
+        const prepText = tpl.formType === 'Vial'
+          ? `sediaan <strong>${tpl.drugName} Vial serbuk ${formatThousandsID(scenario.stock)} ${tpl.unit}</strong> yang dilarutkan dengan pelarut hingga volume total <strong>${formatDecimalID(scenario.vol)} ml</strong>`
+          : `sediaan <strong>${tpl.drugName} Ampul ${formatThousandsID(scenario.stock)} ${tpl.unit}</strong> dengan jumlah volume <strong>${formatDecimalID(scenario.vol)} ml</strong>`;
+
+        const questionText = `Seorang pasien dewasa (usia ${age} tahun) dirawat dengan diagnosa medis <strong>${tpl.diagnosis}</strong> dan mengeluh ${complaint}. Dokter menginstruksikan pemberian injeksi <strong>${tpl.drugName} ${formatDecimalID(orderDose)} ${tpl.unit}</strong> IV. Di ruang perawatan tersedia ${prepText}. Berapa ml obat yang harus diambil ke dalam spuit?`;
+
+        questions.push({
+          id: i + 1,
+          section: 'adult',
+          categoryLabel: 'Dosis Dewasa',
+          subTypeLabel: `Sediaan ${tpl.formType}`,
+          drugOrFluidName: tpl.drugName,
+          drugClass: tpl.drugClass,
+          diagnosis: tpl.diagnosis,
+          question: questionText,
+          options,
+          correctIndex,
+          known: `Dosis diminta = ${formatDecimalID(orderDose)} ${tpl.unit} | Sediaan = ${formatThousandsID(scenario.stock)} ${tpl.unit} (${tpl.formType}) | ${tpl.formType === 'Vial' ? 'Pengencer/Pelarut' : 'Jumlah volume'} = ${formatDecimalID(scenario.vol)} ml`,
+          formula: tpl.formType === 'Vial'
+            ? `(Dosis Diminta / Sediaan Obat) × Pengencer (ml)`
+            : `(Dosis Diminta / Sediaan Obat) × Jumlah Volume (ml)`,
+          calculation: `(${formatDecimalID(orderDose)} ${tpl.unit} / ${formatThousandsID(scenario.stock)} ${tpl.unit}) × ${formatDecimalID(scenario.vol)} ml = ${formatDecimalID(orderDose / scenario.stock)} × ${formatDecimalID(scenario.vol)} ml = ${formatDecimalID(exactMl)} ml`,
+          finalAnswer: `${formatDecimalID(exactMl)} ml`,
+          functionInfo: tpl.functionText
+        });
+      }
+
+      // 2. GENERATE 17 SOAL DOSIS ANAK & BAYI (No. 19 - 35)
+      const shuffledPeds = seededShuffle(rng, PEDIATRIC_DRUG_TEMPLATES);
+      for (let i = 0; i < 17; i++) {
+        const tpl = shuffledPeds[i % shuffledPeds.length];
+        // Variasikan berat badan sedikit namun tetap menjaga hasil eksak
+        const weightFactor = rng() > 0.5 ? 1 : 0.5;
+        let usedWeight = tpl.weightKg;
+        let orderDose = tpl.fixedOrder || (tpl.dosePerKg * usedWeight);
+
+        if (!tpl.fixedOrder && weightFactor === 0.5 && tpl.weightKg >= 8 && tpl.weightKg % 2 === 0) {
+          // Gunakan variasi BB lain yang tetap menghasilkan ml bersih
+          const altWeight = tpl.weightKg + 4;
+          const altOrder = Math.round((tpl.dosePerKg * altWeight) * 1000) / 1000;
+          const altMl = Math.round(((altOrder / tpl.stock) * tpl.vol) * 1000) / 1000;
+          if (Number.isInteger(altMl * 4)) {
+            usedWeight = altWeight;
+            orderDose = altOrder;
+          }
+        }
+
+        // Khusus bayi neonatus Ampicillin pastikan eksak
+        if (tpl.drugName === "Ampicillin" && tpl.patientAge.includes("Neonatus")) {
+          usedWeight = 4;
+          orderDose = 50 * 4; // 200 mg -> (200/500)*5 = 2 ml
+        }
+
+        const exactMl = Math.round(((orderDose / tpl.stock) * tpl.vol) * 1000) / 1000;
+
+        const distractors = [
+          Math.round((exactMl + 0.25) * 100) / 100,
+          Math.round((exactMl + 0.5) * 100) / 100,
+          Math.round((exactMl * 2) * 100) / 100,
+          Math.round((exactMl - 0.25) * 100) / 100,
+          Math.round(((tpl.stock / orderDose) * tpl.vol) * 100) / 100
+        ];
+
+        const { options, correctIndex } = buildOptionsWithExactAnswer(rng, exactMl, 'ml', distractors);
+
+        const doseInstructionText = tpl.fixedOrder
+          ? `<strong>${tpl.drugName} ${formatDecimalID(tpl.fixedOrder)} ${tpl.unit}</strong>`
+          : `<strong>${tpl.drugName} dengan dosis ${formatDecimalID(tpl.dosePerKg)} ${tpl.unit}/kgBB</strong>`;
+
+        const prepText = tpl.formType === 'Vial'
+          ? `sediaan <strong>${tpl.drugName} Vial serbuk ${formatThousandsID(tpl.stock)} ${tpl.unit}</strong> yang dilarutkan dengan pelarut hingga volume <strong>${formatDecimalID(tpl.vol)} ml</strong>`
+          : `sediaan <strong>${tpl.drugName} Ampul ${formatThousandsID(tpl.stock)} ${tpl.unit}</strong> dalam volume <strong>${formatDecimalID(tpl.vol)} ml</strong>`;
+
+        const questionText = `Pasien anak/bayi usia <strong>${tpl.patientAge}</strong> dengan berat badan <strong>${formatDecimalID(usedWeight)} kg</strong> dirawat dengan diagnosa medis <strong>${tpl.diagnosis}</strong> dan mengalami keluhan ${tpl.complaint}. Dokter menginstruksikan pemberian ${doseInstructionText} IV/IM${tpl.fixedOrder ? '' : ` (dosis total ${formatDecimalID(tpl.dosePerKg)} ${tpl.unit}/kgBB × ${formatDecimalID(usedWeight)} kg = ${formatDecimalID(orderDose)} ${tpl.unit})`}. Tersedia ${prepText}. Berapa ml obat yang harus diambil?`;
+
+        const calcStep = tpl.fixedOrder
+          ? `Dosis diminta = ${formatDecimalID(orderDose)} ${tpl.unit}; sediaan = ${formatThousandsID(tpl.stock)} ${tpl.unit}/${formatDecimalID(tpl.vol)} ml → (${formatDecimalID(orderDose)} / ${formatThousandsID(tpl.stock)}) × ${formatDecimalID(tpl.vol)} ml = ${formatDecimalID(exactMl)} ml`
+          : `Dosis total = ${formatDecimalID(tpl.dosePerKg)} ${tpl.unit}/kgBB × ${formatDecimalID(usedWeight)} kg = ${formatDecimalID(orderDose)} ${tpl.unit}; sediaan = ${formatThousandsID(tpl.stock)} ${tpl.unit}/${formatDecimalID(tpl.vol)} ml → (${formatDecimalID(orderDose)} / ${formatThousandsID(tpl.stock)}) × ${formatDecimalID(tpl.vol)} ml = ${formatDecimalID(exactMl)} ml`;
+
+        questions.push({
+          id: 18 + i + 1,
+          section: 'pediatric',
+          categoryLabel: 'Dosis Anak',
+          subTypeLabel: `Sediaan ${tpl.formType}`,
+          drugOrFluidName: tpl.drugName,
+          drugClass: tpl.drugClass,
+          diagnosis: tpl.diagnosis,
+          question: questionText,
+          options,
+          correctIndex,
+          known: `BB Anak = ${formatDecimalID(usedWeight)} kg | Dosis diminta = ${formatDecimalID(orderDose)} ${tpl.unit} | Sediaan = ${formatThousandsID(tpl.stock)} ${tpl.unit} (${tpl.formType}) | Volume = ${formatDecimalID(tpl.vol)} ml`,
+          formula: tpl.formType === 'Vial'
+            ? `(Dosis Diminta / Sediaan Obat) × Pengencer (ml)`
+            : `(Dosis Diminta / Sediaan Obat) × Jumlah Volume (ml)`,
+          calculation: calcStep,
+          finalAnswer: `${formatDecimalID(exactMl)} ml`,
+          functionInfo: tpl.functionText
+        });
+      }
+
+      // 3. GENERATE 15 SOAL TETESAN INFUS DEWASA & ANAK (No. 36 - 50)
+      const shuffledInfusions = seededShuffle(rng, INFUSION_TEMPLATES);
+      for (let i = 0; i < 15; i++) {
+        const tpl = shuffledInfusions[i % shuffledInfusions.length];
+        // Filter hanya exactPairs yang benar-benar menghasilkan TPM bulat
+        const validPairs = tpl.exactPairs.filter(p => ((p.vol * tpl.dropFactor) % (p.hours * 60)) === 0);
+        const pair = seededPick(rng, validPairs);
+
+        const exactTpm = (pair.vol * tpl.dropFactor) / (pair.hours * 60);
+
+        // Pengecoh logis: misal salah faktor tetes (pakai 20 padahal 60/15, atau lupa dikali 60 menit)
+        const wrongFactor = tpl.dropFactor === 60 ? 20 : (tpl.dropFactor === 20 ? 15 : 20);
+        const distractors = [
+          Math.round((pair.vol * wrongFactor) / (pair.hours * 60)),
+          exactTpm + 10,
+          exactTpm - 10,
+          exactTpm + 15,
+          exactTpm + 5,
+          Math.round(pair.vol / pair.hours)
+        ];
+
+        const { options, correctIndex } = buildOptionsWithExactAnswer(rng, exactTpm, 'TPM', distractors);
+
+        const questionText = `${tpl.patientDesc} dirawat dengan diagnosa medis <strong>${tpl.diagnosis}</strong> dengan keluhan ${tpl.complaint}. Dokter menginstruksikan pemberian terapi cairan infus <strong>${tpl.fluidName} sebanyak ${formatThousandsID(pair.vol)} ml</strong> yang harus habis dalam waktu <strong>${pair.hours} jam</strong>. Jika perawat menggunakan set infus <strong>${tpl.setType} (faktor tetes ${tpl.dropFactor} tetes/ml)</strong>, berapa jumlah tetesan per menit (TPM) yang harus diatur?`;
+
+        questions.push({
+          id: 35 + i + 1,
+          section: 'infusion',
+          categoryLabel: `Infus ${tpl.patientGroup}`,
+          subTypeLabel: `${tpl.setType} (${tpl.dropFactor} tpm)`,
+          drugOrFluidName: `Infus ${tpl.fluidName}`,
+          drugClass: `Terapi Cairan Parenteral (${tpl.setType})`,
+          diagnosis: tpl.diagnosis,
+          question: questionText,
+          options,
+          correctIndex,
+          known: `Jumlah Cairan = ${formatThousandsID(pair.vol)} ml | Waktu = ${pair.hours} jam (${pair.hours * 60} menit) | Faktor Tetes (${tpl.setType}) = ${tpl.dropFactor} tetes/ml`,
+          formula: `(Jumlah Cairan [ml] × Faktor Tetes) / (Waktu [jam] × 60 menit)`,
+          calculation: `(${formatThousandsID(pair.vol)} × ${tpl.dropFactor}) / (${pair.hours} × 60) = ${formatThousandsID(pair.vol * tpl.dropFactor)} / ${pair.hours * 60} = ${exactTpm} TPM`,
+          finalAnswer: `${exactTpm} TPM`,
+          functionInfo: tpl.functionText
+        });
+      }
+
+      return {
+        seed: seedString,
+        label: packLabel,
+        questions
+      };
+    }
+
+    // =========================================================================
+    // 3. STATE APLIKASI & PENYIMPANAN LOCALSTORAGE (RIWAYAT + PROGRES HARIAN)
+    // =========================================================================
+    const STORAGE_KEY_HISTORY = 'medcalc_quiz_history_v2';
+    const STORAGE_KEY_DAILY_STATE = 'medcalc_daily_progress_v2';
+
+    let activePack = null; // { seed, label, questions }
+    let isCustomRandomPack = false;
+    let userAnswers = {}; // { [questionId]: optionIndex }
+    let isSavedToHistory = false;
+
+    let currentCategoryFilter = 'all'; // 'all' | 'adult' | 'pediatric' | 'infusion'
+    let currentViewMode = 'list'; // 'list' | 'paged' | 'single'
+    let currentStepIndex = 0; // index halaman (paged) atau index soal (single)
+    const QUESTIONS_PER_PAGE = 10;
+    let formulaVisible = true;
+    let pendingModalAction = null;
+
+    // =========================================================================
+    // INISIALISASI SAAT HALAMAN DIMUAT
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      initDailySession();
+      updateHistoryBadge();
+      renderNavigationGrid();
+      renderQuestions();
+      updateLiveScoreboard();
+    });
+
+    function initDailySession() {
+      const todayISO = getTodayISOString();
+      const todayIndo = formatIndonesianDate(todayISO);
+
+      activePack = generateQuestionPack(`DAILY_${todayISO}`, `Paket Harian (${todayIndo})`);
+      isCustomRandomPack = false;
+
+      document.getElementById('daily-date-badge').textContent = `Paket Soal Harian: ${todayIndo}`;
+      document.getElementById('pack-mode-indicator').textContent = `Mode: Paket Harian (${todayIndo}) • Berganti Otomatis Tiap Hari`;
+      document.getElementById('back-to-daily-btn').classList.add('hidden');
+
+      // Pulihkan jawaban hari ini jika pengguna sempat mengerjakan hari ini
+      try {
+        const savedRaw = localStorage.getItem(STORAGE_KEY_DAILY_STATE);
+        if (savedRaw) {
+          const parsed = JSON.parse(savedRaw);
+          if (
+            parsed &&
+            parsed.date === todayISO &&
+            parsed.answers &&
+            typeof parsed.answers === 'object' &&
+            !Array.isArray(parsed.answers)
+          ) {
+            userAnswers = {};
+            activePack.questions.forEach(q => {
+              const answer = parsed.answers[q.id];
+              if (Number.isInteger(answer) && answer >= 0 && answer < q.options.length) {
+                userAnswers[q.id] = answer;
+              }
+            });
+            isSavedToHistory = Boolean(parsed.isSaved) && Object.keys(userAnswers).length > 0;
+          } else {
+            userAnswers = {};
+            isSavedToHistory = false;
+          }
+        } else {
+          userAnswers = {};
+          isSavedToHistory = false;
+        }
+      } catch (e) {
+        userAnswers = {};
+        isSavedToHistory = false;
+      }
+    }
+
+    function saveDailyProgressToStorage() {
+      if (isCustomRandomPack) return;
+      try {
+        localStorage.setItem(
+          STORAGE_KEY_DAILY_STATE,
+          JSON.stringify({
+            date: getTodayISOString(),
+            answers: userAnswers,
+            isSaved: isSavedToHistory
+          })
+        );
+      } catch (e) {
+        // Abaikan jika storage penuh
+      }
+    }
+
+    // =========================================================================
+    // ROTASI PAKET ACAK TAMBAHAN (DI LUAR PAKET HARIAN)
+    // =========================================================================
+    function requestNewRandomPack() {
+      showModal(
+        'Buat Paket Soal Acak Baru?',
+        'Sistem akan menyusun 50 kombinasi kasus klinis baru (Dewasa, Anak, dan Tetesan Infus) untuk latihan tambahan. Paket harian Anda hari ini tetap tersimpan aman.',
+        'Ya, Buat 50 Soal Baru',
+        'bg-clinical-700 hover:bg-clinical-800',
+        () => {
+          closeModal();
+          const randSeed = `CUSTOM_${Date.now()}_${Math.floor(Math.random() * 99999)}`;
+          const timeLabel = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+          activePack = generateQuestionPack(randSeed, `Latihan Acak (${formatIndonesianDate(getTodayISOString())} • ${timeLabel})`);
+          isCustomRandomPack = true;
+          userAnswers = {};
+          isSavedToHistory = false;
+          currentStepIndex = 0;
+
+          document.getElementById('result-banner').classList.add('hidden');
+          document.getElementById('pack-mode-indicator').textContent = `Mode: Latihan Paket Acak Tambahan (${timeLabel})`;
+          document.getElementById('back-to-daily-btn').classList.remove('hidden');
+
+          resetSubmitButtonLabels();
+          renderNavigationGrid();
+          renderQuestions();
+          updateLiveScoreboard();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      );
+    }
+
+    function switchToDailyPack() {
+      initDailySession();
+      currentStepIndex = 0;
+      document.getElementById('result-banner').classList.add('hidden');
+      resetSubmitButtonLabels();
+      renderNavigationGrid();
+      renderQuestions();
+      updateLiveScoreboard();
+    }
+
+    // =========================================================================
+    // TOGGLE PANEL RUMUS
+    // =========================================================================
+    function toggleFormulaPanel() {
+      const panel = document.getElementById('formula-panel');
+      const btnText = document.getElementById('formula-btn-text');
+      formulaVisible = !formulaVisible;
+
+      if (formulaVisible) {
+        panel.classList.remove('hidden');
+        btnText.textContent = 'Sembunyikan Rumus';
+      } else {
+        panel.classList.add('hidden');
+        btnText.textContent = 'Lihat Rumus';
+      }
+    }
+
+    // =========================================================================
+    // FILTER KATEGORI & MODE TAMPILAN
+    // =========================================================================
+    function setCategoryFilter(cat) {
+      currentCategoryFilter = cat;
+      currentStepIndex = 0;
+
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.remove('bg-clinical-700', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+      });
+
+      const activeBtn = document.getElementById(`cat-${cat}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+        activeBtn.classList.add('bg-clinical-700', 'text-white', 'shadow-sm');
+      }
+
+      renderQuestions();
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      currentStepIndex = 0;
+
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.remove('bg-slate-800', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+      });
+
+      const activeBtn = document.getElementById(`view-${mode}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+        activeBtn.classList.add('bg-slate-800', 'text-white');
+      }
+
+      renderQuestions();
+    }
+
+    function getCategoryFilteredQuestions() {
+      const list = activePack ? activePack.questions : [];
+      if (currentCategoryFilter === 'adult') {
+        return list.filter(q => q.section === 'adult');
+      }
+      if (currentCategoryFilter === 'pediatric') {
+        return list.filter(q => q.section === 'pediatric');
+      }
+      if (currentCategoryFilter === 'infusion') {
+        return list.filter(q => q.section === 'infusion');
+      }
+      return list;
+    }
+
+    function changeStep(delta) {
+      const catList = getCategoryFilteredQuestions();
+      const totalSteps = currentViewMode === 'paged'
+        ? Math.ceil(catList.length / QUESTIONS_PER_PAGE)
+        : catList.length;
+
+      const nextIdx = currentStepIndex + delta;
+      if (nextIdx >= 0 && nextIdx < totalSteps) {
+        currentStepIndex = nextIdx;
+        renderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // =========================================================================
+    // RENDER SOAL & UMPAN BALIK INSTAN (JAWABAN + CARA HITUNG + FUNGSI OBAT)
+    // =========================================================================
+    function renderQuestions() {
+      const container = document.getElementById('questions-container');
+      const catList = getCategoryFilteredQuestions();
+      const optionLabels = ['A', 'B', 'C', 'D'];
+
+      const topPag = document.getElementById('pagination-top-bar');
+      const botPag = document.getElementById('pagination-bottom-bar');
+
+      let visibleQuestions = catList;
+
+      if (currentViewMode === 'paged') {
+        const totalPages = Math.max(1, Math.ceil(catList.length / QUESTIONS_PER_PAGE));
+        if (currentStepIndex >= totalPages) currentStepIndex = 0;
+
+        const startIdx = currentStepIndex * QUESTIONS_PER_PAGE;
+        visibleQuestions = catList.slice(startIdx, startIdx + QUESTIONS_PER_PAGE);
+
+        topPag.classList.remove('hidden');
+        botPag.classList.remove('hidden');
+
+        const firstQ = visibleQuestions[0]?.id || 1;
+        const lastQ = visibleQuestions[visibleQuestions.length - 1]?.id || 1;
+
+        document.getElementById('page-indicator-text').textContent =
+          `Halaman ${currentStepIndex + 1} dari ${totalPages} (Soal #${firstQ} – #${lastQ})`;
+        document.getElementById('page-indicator-bottom').textContent =
+          `Halaman ${currentStepIndex + 1} / ${totalPages}`;
+
+        document.getElementById('prev-page-top').disabled = currentStepIndex === 0;
+        document.getElementById('prev-page-bottom').disabled = currentStepIndex === 0;
+        document.getElementById('next-page-top').disabled = currentStepIndex >= totalPages - 1;
+        document.getElementById('next-page-bottom').disabled = currentStepIndex >= totalPages - 1;
+      } else if (currentViewMode === 'single') {
+        const totalItems = Math.max(1, catList.length);
+        if (currentStepIndex >= totalItems) currentStepIndex = 0;
+
+        visibleQuestions = catList.length > 0 ? [catList[currentStepIndex]] : [];
+
+        topPag.classList.remove('hidden');
+        botPag.classList.remove('hidden');
+
+        const curQNum = visibleQuestions[0]?.id || 1;
+        document.getElementById('page-indicator-text').textContent =
+          `Tampilan Satu per Satu • Soal #${curQNum} (${currentStepIndex + 1} dari ${totalItems})`;
+        document.getElementById('page-indicator-bottom').textContent =
+          `Soal ${currentStepIndex + 1} / ${totalItems}`;
+
+        document.getElementById('prev-page-top').disabled = currentStepIndex === 0;
+        document.getElementById('prev-page-bottom').disabled = currentStepIndex === 0;
+        document.getElementById('next-page-top').disabled = currentStepIndex >= totalItems - 1;
+        document.getElementById('next-page-bottom').disabled = currentStepIndex >= totalItems - 1;
+      } else {
+        topPag.classList.add('hidden');
+        botPag.classList.add('hidden');
+      }
+
+      container.innerHTML = visibleQuestions.map(q => {
+        const selectedIdx = userAnswers[q.id];
+        const hasAnswered = selectedIdx !== undefined;
+        const isCorrect = hasAnswered && selectedIdx === q.correctIndex;
+
+        // Warna border kartu langsung berubah begitu user menjawab
+        let cardBorderClass = 'border-slate-200';
+        let statusBadgeHTML = '';
+
+        if (hasAnswered) {
+          if (isCorrect) {
+            cardBorderClass = 'border-emerald-400 ring-1 ring-emerald-200';
+            statusBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">✓ Jawaban Benar</span>`;
+          } else {
+            cardBorderClass = 'border-rose-400 ring-1 ring-rose-200';
+            statusBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 flex items-center gap-1">✕ Kurang Tepat</span>`;
+          }
+        }
+
+        // Badge kategori
+        let catBadgeClass = 'bg-sky-100 text-clinical-800 border-sky-200';
+        if (q.section === 'pediatric') catBadgeClass = 'bg-teal-100 text-teal-800 border-teal-200';
+        if (q.section === 'infusion') catBadgeClass = 'bg-indigo-100 text-indigo-800 border-indigo-200';
+
+        // Opsi Jawaban A-D (langsung terkunci setelah dijawab)
+        const optionsHTML = q.options.map((optText, idx) => {
+          let optBtnClass = 'border-slate-200 bg-white hover:bg-sky-50/80 hover:border-clinical-400 text-slate-700';
+          let circleClass = 'bg-slate-100 text-slate-700 border-slate-300';
+          let rightIcon = '';
+
+          if (hasAnswered) {
+            if (idx === q.correctIndex) {
+              optBtnClass = 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-1 ring-emerald-400 font-semibold';
+              circleClass = 'bg-emerald-600 text-white border-emerald-600';
+              rightIcon = `<span class="ml-auto text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md shrink-0">✓ Benar</span>`;
+            } else if (selectedIdx === idx) {
+              optBtnClass = 'border-rose-500 bg-rose-50 text-rose-950 ring-1 ring-rose-400 font-semibold';
+              circleClass = 'bg-rose-600 text-white border-rose-600';
+              rightIcon = `<span class="ml-auto text-[11px] font-bold text-rose-800 bg-rose-100 px-2 py-0.5 rounded-md shrink-0">Pilihan Anda</span>`;
+            } else {
+              optBtnClass = 'border-slate-200 bg-slate-50/70 text-slate-400';
+            }
+          }
+
+          return `
+            <button
+              type="button"
+              ${hasAnswered ? 'disabled' : `onclick="selectAnswer(${q.id}, ${idx})"`}
+              class="w-full text-left p-3.5 rounded-xl border transition flex items-center gap-3 ${optBtnClass} ${hasAnswered ? 'cursor-default' : 'cursor-pointer'}"
+            >
+              <span class="w-8 h-8 rounded-lg border flex items-center justify-center text-sm font-bold shrink-0 ${circleClass}">
+                ${optionLabels[idx]}
+              </span>
+              <span class="text-sm sm:text-base">${optText}</span>
+              ${rightIcon}
+            </button>
+          `;
+        }).join('');
+
+        // UMPAN BALIK INSTAN: Muncul langsung begitu soal dijawab
+        const instantFeedbackHTML = hasAnswered ? `
+          <div class="mt-4 rounded-2xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/50' : 'border-rose-200 bg-rose-50/40'} p-4 sm:p-5 text-xs sm:text-sm space-y-3 transition-all">
+            <!-- Banner Status Jawaban -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b ${isCorrect ? 'border-emerald-200' : 'border-rose-200'}">
+              <div class="font-extrabold text-sm sm:text-base ${isCorrect ? 'text-emerald-800' : 'text-rose-800'}">
+                ${isCorrect
+                  ? `✓ Tepat Sekali! Jawaban Benar: ${optionLabels[q.correctIndex]}. ${q.finalAnswer}`
+                  : `✕ Kurang Tepat. Jawaban Benar: ${optionLabels[q.correctIndex]}. ${q.finalAnswer}`
+                }
+              </div>
+              <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600">
+                Diagnosa: ${q.diagnosis}
+              </span>
+            </div>
+
+            <!-- 1. Cara Hitung Langkah demi Langkah -->
+            <div class="bg-white rounded-xl p-3.5 border border-slate-200 space-y-1.5">
+              <div class="font-bold text-clinical-800 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-clinical-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Cara Hitung Langkah demi Langkah:
+              </div>
+              <p class="text-slate-700"><span class="font-semibold text-slate-900">• Diketahui:</span> ${q.known}</p>
+              <p class="text-slate-700"><span class="font-semibold text-slate-900">• Rumus:</span> <code class="bg-slate-100 px-2 py-0.5 rounded text-clinical-800 font-semibold">${q.formula}</code></p>
+              <p class="text-slate-700"><span class="font-semibold text-slate-900">• Perhitungan:</span> <strong class="text-slate-900">${q.calculation}</strong></p>
+            </div>
+
+            <!-- 2. Fungsi & Golongan Obat / Cairan Infus -->
+            <div class="bg-sky-50/80 rounded-xl p-3.5 border border-sky-200 space-y-1">
+              <div class="font-bold text-clinical-900 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-clinical-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+                Fungsi & Peran Klinis (${q.drugOrFluidName} — ${q.drugClass}):
+              </div>
+              <p class="text-slate-700 leading-relaxed">
+                ${q.functionInfo}
+              </p>
+            </div>
+          </div>
+        ` : '';
+
+        return `
+          <article id="question-card-${q.id}" class="bg-white rounded-2xl p-5 sm:p-6 border ${cardBorderClass} shadow-sm transition-all scroll-mt-24">
+            <!-- Header Kartu Soal -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-3 py-1 rounded-xl bg-slate-800 text-white text-xs sm:text-sm font-bold">
+                  Soal #${q.id}
+                </span>
+                <span class="px-2.5 py-1 rounded-lg border text-xs font-semibold ${catBadgeClass}">
+                  ${q.categoryLabel}
+                </span>
+                <span class="px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold">
+                  ${q.subTypeLabel}
+                </span>
+                <span class="text-xs font-semibold text-clinical-700 hidden sm:inline">
+                  • ${q.drugOrFluidName}
+                </span>
+              </div>
+              ${statusBadgeHTML}
+            </div>
+
+            <!-- Skenario Klinis -->
+            <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-4">
+              ${q.question}
+            </p>
+
+            <!-- Opsi Pilihan Ganda -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              ${optionsHTML}
+            </div>
+
+            <!-- Kotak Pembahasan Instan -->
+            ${instantFeedbackHTML}
+          </article>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // TAMBAH SOAL DOSIS ANAK KUSTOM
+    // =========================================================================
+    function openAddQuestionModal() {
+      if (!activePack) return;
+      document.getElementById('add-question-form').reset();
+      document.getElementById('add-question-modal').classList.remove('hidden');
+    }
+
+    function closeAddQuestionModal() {
+      document.getElementById('add-question-modal').classList.add('hidden');
+    }
+
+    function addCustomQuestion(event) {
+      event.preventDefault();
+      if (!activePack) return;
+
+      const form = event.currentTarget;
+      const values = new FormData(form);
+      const drugName = String(values.get('drugName') || '').trim();
+      const dosePerKg = Number(values.get('dosePerKg'));
+      const weightKg = Number(values.get('weightKg'));
+      const stockMg = Number(values.get('stockMg'));
+      const volumeMl = Number(values.get('volumeMl'));
+
+      if (!drugName || ![dosePerKg, weightKg, stockMg, volumeMl].every(Number.isFinite) ||
+          dosePerKg <= 0 || weightKg <= 0 || stockMg <= 0 || volumeMl <= 0) {
+        form.reportValidity();
+        return;
+      }
+
+      const totalDose = dosePerKg * weightKg;
+      const exactMl = Math.round((totalDose / stockMg * volumeMl) * 1000) / 1000;
+      if (!Number.isFinite(exactMl) || exactMl <= 0) return;
+
+      const { options, correctIndex } = buildOptionsWithExactAnswer(
+        mulberry32(Date.now() >>> 0),
+        exactMl,
+        'ml',
+        [exactMl + 0.25, exactMl + 0.5, exactMl * 2, exactMl / 2, exactMl + 1]
+      );
+      const safeDrugName = escapeHTML(drugName);
+      const id = activePack.questions.reduce((max, q) => Math.max(max, q.id), 0) + 1;
+      const doseText = formatDecimalID(dosePerKg);
+      const weightText = formatDecimalID(weightKg);
+      const stockText = formatDecimalID(stockMg);
+      const volumeText = formatDecimalID(volumeMl);
+      const totalDoseText = formatDecimalID(totalDose);
+      const answerText = `${formatDecimalID(exactMl)} ml`;
+
+      activePack.questions.push({
+        id,
+        section: 'pediatric',
+        categoryLabel: 'Dosis Anak (Kustom)',
+        subTypeLabel: 'Soal Buatan Sendiri',
+        drugOrFluidName: drugName,
+        drugClass: 'Latihan perhitungan dosis berbasis berat badan',
+        diagnosis: 'Latihan dosis anak',
+        question: `Hitung volume <strong>${safeDrugName}</strong> untuk pasien dengan berat badan <strong>${weightText} kg</strong>. Dosis yang diminta <strong>${doseText} mg/kgBB</strong>. Sediaan tersedia <strong>${stockText} mg/${volumeText} ml</strong>. Berapa ml yang harus diberikan?`,
+        options,
+        correctIndex,
+        known: `Dosis = ${doseText} mg/kgBB | BB = ${weightText} kg | Sediaan = ${stockText} mg/${volumeText} ml`,
+        formula: `(Dosis [mg/kgBB] × BB [kg] / Sediaan [mg]) × Volume [ml]`,
+        calculation: `(${doseText} × ${weightText} / ${stockText}) × ${volumeText} = (${totalDoseText} / ${stockText}) × ${volumeText} = ${answerText}`,
+        finalAnswer: answerText,
+        functionInfo: 'Soal latihan untuk menerapkan dosis berbasis berat badan. Pastikan dosis dan sediaan sesuai instruksi serta protokol klinis.'
+      });
+
+      closeAddQuestionModal();
+      if (currentCategoryFilter !== 'all' && currentCategoryFilter !== 'pediatric') {
+        setCategoryFilter('all');
+      }
+      currentCategoryFilter = 'all';
+      currentStepIndex = currentViewMode === 'single' ? activePack.questions.length - 1 :
+        (currentViewMode === 'paged' ? Math.floor((activePack.questions.length - 1) / QUESTIONS_PER_PAGE) : 0);
+      renderNavigationGrid();
+      renderQuestions();
+      updateLiveScoreboard();
+      setTimeout(() => document.getElementById(`question-card-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+    }
+
+    // =========================================================================
+    // PILIH JAWABAN & LIVE SCOREBOARD
+    // =========================================================================
+    function selectAnswer(questionId, optionIndex) {
+      if (userAnswers[questionId] !== undefined) return; // Sudah terkunci
+      userAnswers[questionId] = optionIndex;
+      isSavedToHistory = false;
+      document.getElementById('result-banner').classList.add('hidden');
+      resetSubmitButtonLabels();
+
+      saveDailyProgressToStorage();
+      renderQuestions();
+      renderNavigationGrid();
+      updateLiveScoreboard();
+    }
+
+    function computeScoreSummary() {
+      let answered = 0;
+      let correct = 0;
+      let wrong = 0;
+      let adultCorrect = 0;
+      let pedsCorrect = 0;
+      let infusionCorrect = 0;
+
+      const list = activePack ? activePack.questions : [];
+      list.forEach(q => {
+        const ans = userAnswers[q.id];
+        if (ans !== undefined) {
+          answered++;
+          if (ans === q.correctIndex) {
+            correct++;
+            if (q.section === 'adult') adultCorrect++;
+            else if (q.section === 'pediatric') pedsCorrect++;
+            else if (q.section === 'infusion') infusionCorrect++;
+          } else {
+            wrong++;
+          }
+        }
+      });
+
+      const total = list.length;
+      const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+      return {
+        total,
+        answered,
+        unanswered: total - answered,
+        correct,
+        wrong,
+        score,
+        adultCorrect,
+        pedsCorrect,
+        infusionCorrect
+      };
+    }
+
+    function updateLiveScoreboard() {
+      const stats = computeScoreSummary();
+      document.getElementById('progress-count').textContent = stats.answered;
+      document.getElementById('live-correct-count').textContent = stats.correct;
+      document.getElementById('live-wrong-count').textContent = stats.wrong;
+      document.getElementById('live-score-count').textContent = stats.score;
+      document.getElementById('progress-count').nextSibling.textContent = `/${stats.total}`;
+      document.getElementById('nav-progress-badge').textContent = `${stats.answered}/${stats.total}`;
+    }
+
+    // =========================================================================
+    // RENDER NAVIGASI NOMOR SOAL 1-50 (REAL-TIME HIJAU / MERAH)
+    // =========================================================================
+    function renderNavigationGrid() {
+      const adultEl = document.getElementById('nav-grid-adult');
+      const pedsEl = document.getElementById('nav-grid-pediatric');
+      const infEl = document.getElementById('nav-grid-infusion');
+      const list = activePack ? activePack.questions : [];
+
+      const buildBtn = (q) => {
+        const ans = userAnswers[q.id];
+        let cls = 'bg-white text-slate-700 border-slate-300 hover:border-clinical-500 hover:bg-sky-50';
+
+        if (ans !== undefined) {
+          if (ans === q.correctIndex) {
+            cls = 'bg-emerald-500 text-white border-emerald-600 font-bold shadow-xs';
+          } else {
+            cls = 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs';
+          }
+        }
+
+        return `
+          <button
+            type="button"
+            onclick="jumpToQuestion(${q.id})"
+            class="h-8 rounded-lg border text-xs transition flex items-center justify-center cursor-pointer ${cls}"
+            title="Soal #${q.id}: ${q.drugOrFluidName}"
+          >
+            ${q.id}
+          </button>
+        `;
+      };
+
+      adultEl.innerHTML = list.filter(q => q.section === 'adult').map(buildBtn).join('');
+      pedsEl.innerHTML = list.filter(q => q.section === 'pediatric').map(buildBtn).join('');
+      infEl.innerHTML = list.filter(q => q.section === 'infusion').map(buildBtn).join('');
+    }
+
+    function jumpToQuestion(questionId) {
+      // Pastikan filter kategori mencakup soal tujuan
+      if (currentCategoryFilter !== 'all') {
+        setCategoryFilter('all');
+      }
+
+      if (currentViewMode === 'paged') {
+        currentStepIndex = Math.floor((questionId - 1) / QUESTIONS_PER_PAGE);
+        renderQuestions();
+      } else if (currentViewMode === 'single') {
+        currentStepIndex = questionId - 1;
+        renderQuestions();
+      }
+
+      setTimeout(() => {
+        const el = document.getElementById(`question-card-${questionId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-2', 'ring-clinical-500');
+          setTimeout(() => el.classList.remove('ring-2', 'ring-clinical-500'), 1400);
+        }
+      }, 60);
+    }
+
+    // =========================================================================
+    // SIMPAN HASIL KE RIWAYAT PENGERJAAN (LOCALSTORAGE)
+    // =========================================================================
+    function handleSubmitRequest() {
+      const stats = computeScoreSummary();
+
+      if (isSavedToHistory) {
+        showModal(
+          'Hasil Sudah Tersimpan',
+          'Hasil untuk jawaban saat ini sudah tercatat di Riwayat. Jawab soal lain untuk menyimpan evaluasi terbaru.',
+          'Mengerti',
+          'bg-clinical-700 hover:bg-clinical-800',
+          () => closeModal()
+        );
+        return;
+      }
+
+      if (stats.answered === 0) {
+        showModal(
+          'Belum Ada Soal yang Dijawab',
+          'Silakan jawab minimal 1 soal terlebih dahulu sebelum menyimpan hasil evaluasi ke dalam Riwayat Pengerjaan.',
+          'Mengerti',
+          'bg-clinical-700 hover:bg-clinical-800',
+          () => closeModal()
+        );
+        return;
+      }
+
+      const msg = stats.unanswered > 0
+        ? `Anda telah menjawab <strong>${stats.answered} dari ${stats.total} soal</strong> (${stats.correct} benar, ${stats.wrong} salah, skor sementara <strong>${stats.score}</strong>). Simpan hasil ini beserta daftar soal yang telah dikerjakan ke Riwayat?`
+        : `Selamat! Anda telah menyelesaikan seluruh <strong>${stats.total} soal</strong> dengan skor akhir <strong>${stats.score}</strong> (${stats.correct} benar, ${stats.wrong} salah). Simpan ke Riwayat Pengerjaan?`;
+
+      showModal(
+        'Simpan Hasil ke Riwayat?',
+        msg,
+        'Simpan ke Riwayat',
+        'bg-emerald-600 hover:bg-emerald-700',
+        saveSessionToHistory
+      );
+    }
+
+    function saveSessionToHistory() {
+      closeModal();
+      const stats = computeScoreSummary();
+      const optionLabels = ['A', 'B', 'C', 'D'];
+
+      // Kumpulkan detail setiap soal yang sudah dikerjakan pada sesi ini
+      const workedItems = activePack.questions
+        .filter(q => userAnswers[q.id] !== undefined)
+        .map(q => {
+          const userIdx = userAnswers[q.id];
+          return {
+            id: q.id,
+            categoryLabel: q.categoryLabel,
+            subTypeLabel: q.subTypeLabel,
+            drugOrFluidName: q.drugOrFluidName,
+            diagnosis: q.diagnosis,
+            question: q.question,
+            userAnswerText: `${optionLabels[userIdx]}. ${q.options[userIdx]}`,
+            correctAnswerText: `${optionLabels[q.correctIndex]}. ${q.options[q.correctIndex]}`,
+            isCorrect: userIdx === q.correctIndex,
+            calculation: q.calculation,
+            functionInfo: q.functionInfo
+          };
+        });
+
+      const now = new Date();
+      const timestampLabel = `${formatIndonesianDate(getTodayISOString())} • ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`;
+
+      const record = {
+        recordId: `REC_${Date.now()}`,
+        dateISO: getTodayISOString(),
+        timestampLabel,
+        packLabel: activePack.label,
+        answered: stats.answered,
+        total: stats.total,
+        correct: stats.correct,
+        wrong: stats.wrong,
+        score: stats.score,
+        accuracy: stats.answered > 0 ? Math.round((stats.correct / stats.answered) * 100) : 0,
+        items: workedItems
+      };
+
+      const historyList = loadHistoryList();
+      historyList.unshift(record);
+      // Simpan maksimal 30 sesi riwayat terbaru
+      if (historyList.length > 30) historyList.pop();
+
+      try {
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(historyList));
+      } catch (e) {
+        showModal(
+          'Riwayat Tidak Dapat Disimpan',
+          'Penyimpanan browser tidak tersedia atau sudah penuh. Kosongkan ruang penyimpanan lalu coba lagi.',
+          'Mengerti',
+          'bg-clinical-700 hover:bg-clinical-800',
+          () => closeModal()
+        );
+        return;
+      }
+
+      isSavedToHistory = true;
+      saveDailyProgressToStorage();
+      updateHistoryBadge();
+
+      // Tampilkan Banner Ringkasan Hasil
+      document.getElementById('score-value').textContent = stats.score;
+      document.getElementById('correct-count').textContent = stats.correct;
+      document.getElementById('wrong-count').textContent = stats.wrong;
+      document.getElementById('unanswered-count').textContent = stats.unanswered;
+      const sectionTotals = activePack.questions.reduce((totals, q) => {
+        totals[q.section] = (totals[q.section] || 0) + 1;
+        return totals;
+      }, {});
+      document.getElementById('adult-score-detail').textContent = `${stats.adultCorrect}/${sectionTotals.adult || 0} Benar`;
+      document.getElementById('peds-score-detail').textContent = `${stats.pedsCorrect}/${sectionTotals.pediatric || 0} Benar`;
+      document.getElementById('infusion-score-detail').textContent = `${stats.infusionCorrect}/${sectionTotals.infusion || 0} Benar`;
+      document.getElementById('result-pack-subtitle').textContent = `${activePack.label} • Tersimpan ${timestampLabel}`;
+      document.getElementById('result-status-title').textContent =
+        stats.score >= 80
+          ? `Kompetensi Sangat Baik! Skor Anda ${stats.score}/100`
+          : `Hasil Tersimpan ke Riwayat (Skor: ${stats.score}/100)`;
+
+      document.getElementById('result-banner').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function loadHistoryList() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_HISTORY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function updateHistoryBadge() {
+      const list = loadHistoryList();
+      document.getElementById('history-badge-count').textContent = list.length;
+    }
+
+    // =========================================================================
+    // MODAL RIWAYAT PENGERJAAN (DAFTAR SESI & TINJAU ULANG SOAL)
+    // =========================================================================
+    function openHistoryModal() {
+      renderHistoryListView();
+      document.getElementById('history-modal').classList.remove('hidden');
+    }
+
+    function closeHistoryModal() {
+      document.getElementById('history-modal').classList.add('hidden');
+    }
+
+    function renderHistoryListView() {
+      const historyList = loadHistoryList();
+      const body = document.getElementById('history-modal-body');
+
+      document.getElementById('history-modal-title').textContent = 'Riwayat Pengerjaan Latihan';
+      document.getElementById('history-modal-subtitle').textContent =
+        `Total ${historyList.length} sesi latihan tersimpan di perangkat ini`;
+      document.getElementById('history-back-list-btn').classList.add('hidden');
+
+      if (historyList.length === 0) {
+        body.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 text-center border border-slate-200 space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h4 class="font-bold text-slate-800 text-base">Belum Ada Riwayat Tersimpan</h4>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
+              Kerjakan soal-soal latihan lalu klik tombol <strong>"Selesai & Simpan ke Riwayat"</strong> untuk mencatat nilai dan meninjau kembali soal yang pernah Anda kerjakan.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      body.innerHTML = historyList.map((rec, idx) => `
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-lg bg-clinical-100 text-clinical-800 text-xs font-bold">
+                #${historyList.length - idx}
+              </span>
+              <span class="font-bold text-slate-900 text-sm sm:text-base">${rec.packLabel}</span>
+            </div>
+            <div class="text-xs text-slate-500">
+              Disimpan pada: <strong>${rec.timestampLabel}</strong>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+              <span class="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold">
+                Dikerjakan: ${rec.answered}/${rec.total || 50} soal
+              </span>
+              <span class="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-semibold">
+                Benar: ${rec.correct}
+              </span>
+              <span class="px-2.5 py-0.5 rounded-md bg-rose-100 text-rose-800 font-semibold">
+                Salah: ${rec.wrong}
+              </span>
+              <span class="px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-semibold">
+                Akurasi: ${rec.accuracy}%
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 sm:flex-col sm:items-end shrink-0">
+            <div class="text-right mr-auto sm:mr-0">
+              <span class="text-[11px] uppercase font-bold text-slate-400 block">Skor Nilai</span>
+              <span class="text-2xl font-extrabold text-clinical-800">${rec.score}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                onclick="viewHistoryRecordDetail('${rec.recordId}')"
+                class="px-3.5 py-2 rounded-xl bg-clinical-700 hover:bg-clinical-800 text-white text-xs font-bold transition cursor-pointer"
+              >
+                Tinjau Soal (${rec.items.length})
+              </button>
+              <button
+                type="button"
+                onclick="deleteHistoryRecord('${rec.recordId}')"
+                class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold transition cursor-pointer"
+                title="Hapus riwayat ini"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function viewHistoryRecordDetail(recordId) {
+      const historyList = loadHistoryList();
+      const rec = historyList.find(r => r.recordId === recordId);
+      if (!rec) return;
+
+      document.getElementById('history-modal-title').textContent = `Detail Soal Dikerjakan (${rec.packLabel})`;
+      document.getElementById('history-modal-subtitle').textContent =
+        `${rec.timestampLabel} • Skor: ${rec.score} (${rec.correct} Benar, ${rec.wrong} Salah)`;
+      document.getElementById('history-back-list-btn').classList.remove('hidden');
+
+      const body = document.getElementById('history-modal-body');
+      body.innerHTML = rec.items.map(item => `
+        <div class="bg-white rounded-2xl p-4 border ${item.isCorrect ? 'border-emerald-200' : 'border-rose-200'} space-y-2.5 text-xs sm:text-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-lg bg-slate-800 text-white font-bold text-xs">Soal #${item.id}</span>
+              <span class="px-2 py-0.5 rounded-md bg-sky-50 text-clinical-800 border border-sky-200 font-semibold text-xs">${item.categoryLabel}</span>
+              <span class="font-semibold text-slate-700 text-xs">${item.drugOrFluidName}</span>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${item.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              ${item.isCorrect ? '✓ Benar' : '✕ Salah'}
+            </span>
+          </div>
+
+          <p class="text-slate-800 leading-relaxed">${item.question}</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <div class="p-2.5 rounded-xl border ${item.isCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}">
+              <span class="text-[11px] font-bold uppercase block">Jawaban Anda:</span>
+              <strong>${item.userAnswerText}</strong>
+            </div>
+            <div class="p-2.5 rounded-xl border bg-emerald-50/70 border-emerald-200 text-emerald-900">
+              <span class="text-[11px] font-bold uppercase block">Jawaban Benar:</span>
+              <strong>${item.correctAnswerText}</strong>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs space-y-1">
+            <div><strong class="text-clinical-800">Cara Hitung:</strong> ${item.calculation}</div>
+            <div><strong class="text-clinical-800">Fungsi Obat/Cairan:</strong> ${item.functionInfo}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteHistoryRecord(recordId) {
+      const updated = loadHistoryList().filter(r => r.recordId !== recordId);
+      try {
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(updated));
+      } catch (e) {
+        showModal(
+          'Riwayat Tidak Dapat Diperbarui',
+          'Penyimpanan browser tidak tersedia. Riwayat ini belum dihapus.',
+          'Mengerti',
+          'bg-clinical-700 hover:bg-clinical-800',
+          () => closeModal()
+        );
+        return;
+      }
+      updateHistoryBadge();
+      renderHistoryListView();
+    }
+
+    function confirmClearAllHistory() {
+      const historyList = loadHistoryList();
+      if (historyList.length === 0) return;
+
+      showModal(
+        'Hapus Semua Riwayat Pengerjaan?',
+        'Seluruh arsip riwayat nilai dan rincian soal yang pernah dikerjakan akan dihapus permanen dari browser ini.',
+        'Ya, Hapus Semua',
+        'bg-rose-600 hover:bg-rose-700',
+        () => {
+          closeModal();
+          localStorage.removeItem(STORAGE_KEY_HISTORY);
+          updateHistoryBadge();
+          renderHistoryListView();
+        }
+      );
+    }
+
+    // =========================================================================
+    // RESET JAWABAN PAKET SAAT INI
+    // =========================================================================
+    function openResetModal() {
+      showModal(
+        'Reset Jawaban Paket Ini?',
+        'Semua pilihan jawaban pada paket 50 soal yang sedang aktif akan dikosongkan sehingga Anda dapat mengerjakannya ulang dari awal.',
+        'Ya, Reset Jawaban',
+        'bg-rose-600 hover:bg-rose-700',
+        () => {
+          closeModal();
+          userAnswers = {};
+          isSavedToHistory = false;
+          currentStepIndex = 0;
+          saveDailyProgressToStorage();
+
+          document.getElementById('result-banner').classList.add('hidden');
+          resetSubmitButtonLabels();
+          renderNavigationGrid();
+          renderQuestions();
+          updateLiveScoreboard();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      );
+    }
+
+    function resetSubmitButtonLabels() {
+      document.getElementById('top-submit-btn').innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Selesai & Simpan ke Riwayat
+      `;
+      document.getElementById('bottom-submit-btn').innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Selesai & Simpan ke Riwayat
+      `;
+    }
+
+    // =========================================================================
+    // CUSTOM MODAL HELPER (TANPA ALERT/CONFIRM BAWAAN BROWSER)
+    // =========================================================================
+    function showModal(title, message, confirmLabel, confirmBtnClass, onConfirm) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-message').innerHTML = message;
+
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.textContent = confirmLabel;
+      confirmBtn.className = `px-5 py-2.5 rounded-xl text-sm font-bold text-white transition cursor-pointer ${confirmBtnClass}`;
+
+      pendingModalAction = onConfirm;
+      confirmBtn.onclick = () => {
+        if (typeof pendingModalAction === 'function') {
+          pendingModalAction();
+        }
+      };
+
+      document.getElementById('custom-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('custom-modal').classList.add('hidden');
+      pendingModalAction = null;
+    }
+  </script>
+</body>
+</html>
